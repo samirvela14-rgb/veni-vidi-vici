@@ -17,28 +17,44 @@ export default function Login() {
   }
 
   return (
-    <div>
-      <h1>Veni, Vidi, Vici</h1>
-      <form onSubmit={handleLogin}>
-        <input
-          type="email"
-          placeholder="tu@correo.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Contraseña"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button type="submit" disabled={loading}>
-          {loading ? 'Ingresando...' : 'Ingresar'}
-        </button>
-        {error && <p>{error}</p>}
-      </form>
+    <div className="login-pantalla">
+      <div className="login-card">
+        <div className="login-marca">
+          <span className="login-icono">⚔️</span>
+          <h1>Veni, Vidi, Vici</h1>
+          <p className="login-subtitulo">Tu sistema personal</p>
+        </div>
+
+        <form onSubmit={handleLogin} className="login-form">
+          <div className="login-campo">
+            <label>Correo</label>
+            <input
+              type="email"
+              placeholder="tu@correo.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="login-campo">
+            <label>Contraseña</label>
+            <input
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          <button type="submit" className="login-boton" disabled={loading}>
+            {loading ? 'Ingresando...' : 'Ingresar'}
+          </button>
+
+          {error && <p className="login-error">{error}</p>}
+        </form>
+      </div>
     </div>
   )
 }
