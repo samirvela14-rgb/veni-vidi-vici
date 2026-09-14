@@ -1,0 +1,467 @@
+:root {
+  --bg: #0d0d0f;
+  --card: #17171b;
+  --border: #2a2a2f;
+  --text: #f2f2f2;
+  --muted: #8a8a90;
+  --accent: #e63946;
+}
+
+/* ---------- Layout base (mobile primero) ---------- */
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.app-header h1 {
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.app-main {
+  flex: 1;
+  padding: 16px;
+  padding-bottom: 90px; /* espacio para la barra fija abajo en móvil */
+}
+
+.app-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  background: var(--card);
+  border-top: 1px solid var(--border);
+}
+
+.app-nav button {
+  flex: 1;
+  background: none;
+  border: none;
+  color: var(--muted);
+  padding: 12px 4px;
+  font-size: 0.75rem;
+}
+
+.app-nav button.activo {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.btn-salir {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  padding: 6px 12px;
+  border-radius: 8px;
+}
+
+/* ---------- Desktop: la nav se vuelve sidebar ---------- */
+@media (min-width: 768px) {
+  .app {
+    flex-direction: row;
+  }
+
+  .app-nav {
+    position: static;
+    flex-direction: column;
+    width: 220px;
+    border-top: none;
+    border-right: 1px solid var(--border);
+    padding: 16px 8px;
+    gap: 4px;
+  }
+
+  .app-nav button {
+    text-align: left;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+  }
+
+  .app-nav button.activo {
+    background: var(--accent);
+    color: white;
+  }
+
+  .app-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    max-width: 900px;
+  }
+
+  .app-main {
+    padding: 24px 32px;
+    padding-bottom: 24px;
+  }
+}
+
+.seccion { display: flex; flex-direction: column; gap: 16px; }
+
+/* Tarjetas de stats */
+.stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+}
+.stat-valor { font-size: 1.4rem; font-weight: 700; }
+.stat-label { color: var(--muted); font-size: 0.75rem; }
+.verde { color: #3ddc84; }
+
+/* Tabla semanal */
+.tabla-semanal {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  overflow-x: auto;
+}
+.tabla-header, .tabla-fila {
+  display: grid;
+  grid-template-columns: 110px repeat(7, 1fr);
+  align-items: center;
+  gap: 6px;
+}
+.tabla-header {
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-align: center;
+  margin-bottom: 8px;
+}
+.dia-hoy { color: var(--accent); font-weight: 700; }
+.tabla-fila { padding: 6px 0; }
+.nombre-habito { font-size: 0.85rem; }
+
+.check-dia {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: none;
+  color: transparent;
+  margin: 0 auto;
+  width: 28px;
+}
+.check-dia.marcado {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+.check-dia:disabled { opacity: 0.3; }
+
+/* Heatmap */
+.heatmap-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+.heatmap-header { color: var(--muted); font-size: 0.85rem; margin-bottom: 10px; }
+.heatmap-grid { display: grid; grid-template-columns: repeat(14, 1fr); gap: 3px; }
+.heat-cell { aspect-ratio: 1; border-radius: 3px; background: var(--border); }
+.heat-cell { aspect-ratio: 1; border-radius: 3px; background: var(--border); }
+
+/* Formulario rápido */
+.form-rapido { display: flex; gap: 8px; }
+.form-rapido input {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 10px 12px;
+  border-radius: 10px;
+  flex: 1;
+}
+.form-rapido button {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+.nombre-habito-fila { display: flex; flex-direction: column; gap: 4px; }
+.nombre-habito { font-size: 0.85rem; cursor: pointer; }
+.acciones-habito { display: flex; gap: 4px; }
+.acciones-habito button {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.65rem;
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.nombre-habito-fila { display: flex; align-items: center; gap: 8px; }
+.drag-handle { cursor: grab; color: var(--muted); touch-action: none; }
+.nombre-habito { font-size: 0.85rem; cursor: pointer; flex: 1; }
+.btn-eliminar-habito {
+  background: none; border: none; color: var(--muted); font-size: 0.7rem;
+}
+.vacio { color: var(--muted); text-align: center; padding: 16px 0; }
+
+.nombre-habito-fila { display: flex; align-items: center; gap: 8px; }
+.drag-handle { cursor: grab; color: var(--muted); touch-action: none; }
+.nombre-habito { font-size: 0.85rem; cursor: pointer; flex: 1; }
+.btn-eliminar-habito { background: none; border: none; color: var(--muted); font-size: 0.7rem; }
+.vacio { color: var(--muted); text-align: center; padding: 16px 0; }
+.btn-editar-toggle {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.7rem;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+.journal-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+.journal-nav button {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+}
+.journal-nav button:disabled { opacity: 0.3; }
+.journal-fecha { font-weight: 600; min-width: 140px; text-align: center; }
+
+.journal-campo { display: flex; flex-direction: column; gap: 6px; }
+.journal-campo label { color: var(--muted); font-size: 0.8rem; }
+.journal-campo input, .journal-campo textarea {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.jarvis-placeholder {
+  background: var(--card);
+  border: 1px dashed var(--border);
+  color: var(--muted);
+  padding: 12px;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+.subtabs { display: flex; gap: 8px; }
+.subtabs button {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+}
+.subtabs button.activo { background: var(--accent); border-color: var(--accent); color: white; }
+
+.journal-fecha-input {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-family: inherit;
+  color-scheme: dark; /* hace que el ícono del calendario se vea blanco, no negro */
+}
+.metas-grid { display: flex; flex-direction: column; gap: 16px; }
+
+.meta-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.meta-foto {
+  height: 140px;
+  background-size: cover;
+  background-position: center;
+}
+
+.meta-card-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+
+.meta-card-header { display: flex; justify-content: space-between; align-items: center; }
+.meta-emoji { font-size: 1.3rem; }
+
+.meta-card-body h3 { margin: 0; font-size: 1.1rem; }
+.meta-objetivo-label { color: var(--muted); font-size: 0.85rem; }
+
+.meta-progreso-fila { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+
+.barra-progreso { background: var(--border); border-radius: 999px; height: 8px; overflow: hidden; }
+.barra-relleno { background: var(--accent); height: 100%; transition: width 0.3s; }
+.barra-completa { background: #2ecc71; }
+
+.meta-falta { font-size: 0.85rem; color: var(--muted); }
+
+.meta-input-valor {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 10px;
+  border-radius: 8px;
+  margin-top: 4px;
+}
+
+.kanban-columna { display: flex; flex-direction: column; gap: 8px; }
+.kanban-titulo { font-weight: 600; color: var(--muted); font-size: 0.9rem; display: flex; gap: 6px; }
+.kanban-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.kanban-card-header { display: flex; justify-content: space-between; align-items: center; }
+.chip-etiqueta {
+  background: var(--border);
+  color: var(--muted);
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+.chip-btn {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+}
+
+.jarvis-chat { height: calc(100dvh - 160px); display: flex; flex-direction: column; }
+.jarvis-mensajes {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 10px;
+}
+.jarvis-burbuja {
+  max-width: 80%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+}
+.jarvis-burbuja.jarvis {
+  background: var(--card);
+  border: 1px solid var(--border);
+  align-self: flex-start;
+}
+.jarvis-burbuja.user {
+  background: var(--accent);
+  color: white;
+  align-self: flex-end;
+}
+.jarvis-input-fila { display: flex; gap: 8px; }
+.jarvis-input-fila input {
+  flex: 1;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 10px 14px;
+  border-radius: 999px;
+}
+.jarvis-input-fila button {
+  background: var(--accent);
+  color: white;
+  border: none;
+  width: 40px;
+  border-radius: 50%;
+}
+
+.journal-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+.journal-nav button {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+}
+.journal-nav button:disabled { opacity: 0.3; }
+
+.journal-fecha-input {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-family: inherit;
+  color-scheme: dark;
+}
+
+.journal-campo { display: flex; flex-direction: column; gap: 6px; }
+.journal-campo label { color: var(--muted); font-size: 0.8rem; }
+.journal-campo input, .journal-campo textarea {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.jarvis-placeholder {
+  background: var(--card);
+  border: 1px dashed var(--border);
+  color: var(--muted);
+  padding: 12px;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 0.85rem;
+  width: 100%;
+}
+
+.jarvis-analisis {
+  background: var(--card);
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.jarvis-puntaje { font-size: 1.4rem; font-weight: 700; color: var(--accent); }
+.jarvis-comentario { font-size: 0.85rem; color: var(--text); }
+
+
+
