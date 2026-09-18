@@ -1,10 +1,10 @@
 :root {
-  --bg: #0d0d0f;
-  --card: #17171b;
-  --border: #2a2a2f;
-  --text: #f2f2f2;
-  --muted: #8a8a90;
-  --accent: #e63946;
+  --bg: #f0efe9;
+  --card: #ffffff;
+  --border: #e2dfd6;
+  --text: #232323;
+  --muted: #6f6d68;
+  --accent: #3f6fae;
 }
 
 /* ---------- Layout base (mobile primero) ---------- */
@@ -30,7 +30,7 @@
 .app-main {
   flex: 1;
   padding: 16px;
-  padding-bottom: 90px; /* espacio para la barra fija abajo en móvil */
+  padding-bottom: 90px;
 }
 
 .app-nav {
@@ -65,6 +65,15 @@
   border-radius: 8px;
 }
 
+.nav-credito {
+  color: rgba(0,0,0,0.6);
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  font-weight: 700;
+  padding: 0 14px;
+  margin-bottom: 12px;
+}
+
 /* ---------- Desktop: la nav se vuelve sidebar ---------- */
 @media (min-width: 768px) {
   .app {
@@ -75,29 +84,33 @@
     position: static;
     flex-direction: column;
     width: 220px;
-    border-top: none;
-    border-right: 1px solid var(--border);
-    padding: 16px 8px;
-    gap: 4px;
+    margin: 16px;
+    border-radius: 24px;
+    background: linear-gradient(180deg, #b7b5c9, #a3a1b6);
+    border: none;
+    padding: 24px 16px;
+    gap: 8px;
   }
 
   .app-nav button {
     text-align: left;
-    padding: 10px 14px;
+    padding: 8px 14px;
     border-radius: 8px;
-    font-size: 0.95rem;
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.4rem;
+    color: #1c1c2e;
   }
 
   .app-nav button.activo {
-    background: var(--accent);
-    color: white;
+    background: rgba(255, 255, 255, 0.3);
+    color: #0d0d0f;
   }
 
   .app-content {
     flex: 1;
     display: flex;
     flex-direction: column;
-    max-width: 900px;
+    max-width: 1000px;
   }
 
   .app-main {
@@ -107,8 +120,15 @@
 }
 
 .seccion { display: flex; flex-direction: column; gap: 16px; }
+.vacio { color: var(--muted); text-align: center; padding: 16px 0; }
 
-/* Tarjetas de stats */
+/* ---------- Barras de progreso (reutilizadas en varios módulos) ---------- */
+.barra-progreso { background: var(--border); border-radius: 999px; height: 8px; overflow: hidden; }
+.barra-relleno { background: var(--accent); height: 100%; transition: width 0.3s; }
+.barra-completa { background: #2ecc71; }
+.barra-mini { height: 6px; }
+
+/* ---------- Hábitos: tarjetas de stats ---------- */
 .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .stat-card {
   background: var(--card);
@@ -125,7 +145,7 @@
 .stat-label { color: var(--muted); font-size: 0.75rem; }
 .verde { color: #3ddc84; }
 
-/* Tabla semanal */
+/* ---------- Hábitos: tabla semanal ---------- */
 .tabla-semanal {
   background: var(--card);
   border: 1px solid var(--border);
@@ -147,7 +167,6 @@
 }
 .dia-hoy { color: var(--accent); font-weight: 700; }
 .tabla-fila { padding: 6px 0; }
-.nombre-habito { font-size: 0.85rem; }
 
 .check-dia {
   aspect-ratio: 1;
@@ -165,7 +184,20 @@
 }
 .check-dia:disabled { opacity: 0.3; }
 
-/* Heatmap */
+.nombre-habito-fila { display: flex; align-items: center; gap: 8px; }
+.drag-handle { cursor: grab; color: var(--muted); touch-action: none; }
+.nombre-habito { font-size: 0.85rem; cursor: pointer; flex: 1; }
+.btn-eliminar-habito { background: none; border: none; color: var(--muted); font-size: 0.7rem; }
+.btn-editar-toggle {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.7rem;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+/* ---------- Hábitos: heatmap ---------- */
 .heatmap-card {
   background: var(--card);
   border: 1px solid var(--border);
@@ -175,10 +207,11 @@
 .heatmap-header { color: var(--muted); font-size: 0.85rem; margin-bottom: 10px; }
 .heatmap-grid { display: grid; grid-template-columns: repeat(14, 1fr); gap: 3px; }
 .heat-cell { aspect-ratio: 1; border-radius: 3px; background: var(--border); }
-.heat-cell { aspect-ratio: 1; border-radius: 3px; background: var(--border); }
 
-/* Formulario rápido */
+/* ---------- Formulario rápido (reutilizado en varios módulos) ---------- */
 .form-rapido { display: flex; gap: 8px; }
+.form-rapido.form-columna { flex-direction: column; }
+.form-rapido .fila { display: flex; gap: 8px; }
 .form-rapido input {
   background: var(--card);
   border: 1px solid var(--border);
@@ -195,212 +228,8 @@
   border-radius: 10px;
   font-weight: 600;
 }
-.nombre-habito-fila { display: flex; flex-direction: column; gap: 4px; }
-.nombre-habito { font-size: 0.85rem; cursor: pointer; }
-.acciones-habito { display: flex; gap: 4px; }
-.acciones-habito button {
-  background: none;
-  border: 1px solid var(--border);
-  color: var(--muted);
-  font-size: 0.65rem;
-  padding: 1px 5px;
-  border-radius: 4px;
-}
 
-.nombre-habito-fila { display: flex; align-items: center; gap: 8px; }
-.drag-handle { cursor: grab; color: var(--muted); touch-action: none; }
-.nombre-habito { font-size: 0.85rem; cursor: pointer; flex: 1; }
-.btn-eliminar-habito {
-  background: none; border: none; color: var(--muted); font-size: 0.7rem;
-}
-.vacio { color: var(--muted); text-align: center; padding: 16px 0; }
-
-.nombre-habito-fila { display: flex; align-items: center; gap: 8px; }
-.drag-handle { cursor: grab; color: var(--muted); touch-action: none; }
-.nombre-habito { font-size: 0.85rem; cursor: pointer; flex: 1; }
-.btn-eliminar-habito { background: none; border: none; color: var(--muted); font-size: 0.7rem; }
-.vacio { color: var(--muted); text-align: center; padding: 16px 0; }
-.btn-editar-toggle {
-  background: none;
-  border: 1px solid var(--border);
-  color: var(--muted);
-  font-size: 0.7rem;
-  padding: 3px 10px;
-  border-radius: 999px;
-}
-
-.journal-nav {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-}
-.journal-nav button {
-  background: var(--card);
-  border: 1px solid var(--border);
-  color: var(--text);
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-}
-.journal-nav button:disabled { opacity: 0.3; }
-.journal-fecha { font-weight: 600; min-width: 140px; text-align: center; }
-
-.journal-campo { display: flex; flex-direction: column; gap: 6px; }
-.journal-campo label { color: var(--muted); font-size: 0.8rem; }
-.journal-campo input, .journal-campo textarea {
-  background: var(--card);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 10px 12px;
-  border-radius: 10px;
-  font-family: inherit;
-  resize: vertical;
-}
-
-.jarvis-placeholder {
-  background: var(--card);
-  border: 1px dashed var(--border);
-  color: var(--muted);
-  padding: 12px;
-  border-radius: 10px;
-  text-align: center;
-  font-size: 0.85rem;
-}
-
-.subtabs { display: flex; gap: 8px; }
-.subtabs button {
-  background: var(--card);
-  border: 1px solid var(--border);
-  color: var(--muted);
-  padding: 8px 16px;
-  border-radius: 999px;
-  font-size: 0.85rem;
-}
-.subtabs button.activo { background: var(--accent); border-color: var(--accent); color: white; }
-
-.journal-fecha-input {
-  background: var(--card);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 8px 12px;
-  border-radius: 10px;
-  font-weight: 600;
-  font-family: inherit;
-  color-scheme: dark; /* hace que el ícono del calendario se vea blanco, no negro */
-}
-.metas-grid { display: flex; flex-direction: column; gap: 16px; }
-
-.meta-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  overflow: hidden;
-}
-
-.meta-foto {
-  height: 140px;
-  background-size: cover;
-  background-position: center;
-}
-
-.meta-card-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
-
-.meta-card-header { display: flex; justify-content: space-between; align-items: center; }
-.meta-emoji { font-size: 1.3rem; }
-
-.meta-card-body h3 { margin: 0; font-size: 1.1rem; }
-.meta-objetivo-label { color: var(--muted); font-size: 0.85rem; }
-
-.meta-progreso-fila { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
-
-.barra-progreso { background: var(--border); border-radius: 999px; height: 8px; overflow: hidden; }
-.barra-relleno { background: var(--accent); height: 100%; transition: width 0.3s; }
-.barra-completa { background: #2ecc71; }
-
-.meta-falta { font-size: 0.85rem; color: var(--muted); }
-
-.meta-input-valor {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 8px 10px;
-  border-radius: 8px;
-  margin-top: 4px;
-}
-
-.kanban-columna { display: flex; flex-direction: column; gap: 8px; }
-.kanban-titulo { font-weight: 600; color: var(--muted); font-size: 0.9rem; display: flex; gap: 6px; }
-.kanban-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.kanban-card-header { display: flex; justify-content: space-between; align-items: center; }
-.chip-etiqueta {
-  background: var(--border);
-  color: var(--muted);
-  font-size: 0.7rem;
-  padding: 2px 8px;
-  border-radius: 999px;
-  text-transform: uppercase;
-}
-.chip-btn {
-  background: var(--card);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 6px 12px;
-  border-radius: 999px;
-  font-size: 0.8rem;
-}
-
-.jarvis-chat { height: calc(100dvh - 160px); display: flex; flex-direction: column; }
-.jarvis-mensajes {
-  flex: 1;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding-bottom: 10px;
-}
-.jarvis-burbuja {
-  max-width: 80%;
-  padding: 10px 14px;
-  border-radius: 14px;
-  font-size: 0.9rem;
-  white-space: pre-wrap;
-}
-.jarvis-burbuja.jarvis {
-  background: var(--card);
-  border: 1px solid var(--border);
-  align-self: flex-start;
-}
-.jarvis-burbuja.user {
-  background: var(--accent);
-  color: white;
-  align-self: flex-end;
-}
-.jarvis-input-fila { display: flex; gap: 8px; }
-.jarvis-input-fila input {
-  flex: 1;
-  background: var(--card);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 10px 14px;
-  border-radius: 999px;
-}
-.jarvis-input-fila button {
-  background: var(--accent);
-  color: white;
-  border: none;
-  width: 40px;
-  border-radius: 50%;
-}
-
+/* ---------- Journal ---------- */
 .journal-nav {
   display: flex;
   align-items: center;
@@ -463,15 +292,128 @@
 .jarvis-puntaje { font-size: 1.4rem; font-weight: 700; color: var(--accent); }
 .jarvis-comentario { font-size: 0.85rem; color: var(--text); }
 
+.subtabs { display: flex; gap: 8px; }
+.subtabs button {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+}
+.subtabs button.activo { background: var(--accent); border-color: var(--accent); color: white; }
 
+/* ---------- Metas (Proyectos+Metas, en pausa pero el código sigue vivo) ---------- */
+.metas-grid { display: flex; flex-direction: column; gap: 16px; }
+.meta-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.meta-foto {
+  height: 140px;
+  background-size: cover;
+  background-position: center;
+}
+.meta-card-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+.meta-card-header { display: flex; justify-content: space-between; align-items: center; }
+.meta-emoji { font-size: 1.3rem; }
+.meta-card-body h3 { margin: 0; font-size: 1.1rem; }
+.meta-objetivo-label { color: var(--muted); font-size: 0.85rem; }
+.meta-progreso-fila { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+.meta-falta { font-size: 0.85rem; color: var(--muted); }
+.meta-input-valor {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 10px;
+  border-radius: 8px;
+  margin-top: 4px;
+}
 
+/* ---------- Proyectos (kanban, en pausa pero el código sigue vivo) ---------- */
+.kanban-columna { display: flex; flex-direction: column; gap: 8px; }
+.kanban-titulo { font-weight: 600; color: var(--muted); font-size: 0.9rem; display: flex; gap: 6px; }
+.kanban-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.kanban-card-header { display: flex; justify-content: space-between; align-items: center; }
+.chip-etiqueta {
+  background: var(--border);
+  color: var(--muted);
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+.chip-btn {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+}
+
+/* ---------- Jarvis (chat) ---------- */
+.jarvis-chat { height: calc(100dvh - 160px); display: flex; flex-direction: column; }
+.jarvis-mensajes {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 10px;
+}
+.jarvis-burbuja {
+  max-width: 80%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+}
+.jarvis-burbuja.jarvis {
+  background: var(--card);
+  border: 1px solid var(--border);
+  align-self: flex-start;
+}
+.jarvis-burbuja.user {
+  background: var(--accent);
+  color: white;
+  align-self: flex-end;
+}
+.jarvis-input-fila { display: flex; gap: 8px; }
+.jarvis-input-fila input {
+  flex: 1;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 10px 14px;
+  border-radius: 999px;
+}
+.jarvis-input-fila button {
+  background: var(--accent);
+  color: white;
+  border: none;
+  width: 40px;
+  border-radius: 50%;
+}
+
+/* ---------- Login ---------- */
 .login-pantalla {
   min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: radial-gradient(circle at top, rgba(230, 57, 70, 0.12), var(--bg) 60%);
+  background: radial-gradient(circle at top, rgba(63, 111, 174, 0.12), var(--bg) 60%);
 }
 
 .login-card {
@@ -531,4 +473,105 @@
   font-size: 0.85rem;
   text-align: center;
   margin: 0;
+}
+
+/* ---------- Dashboard: fondo continuo (misma imagen, mitad de abajo girada 180°) ---------- */
+.dashboard-flow {
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+
+.dashboard-hero-content { position: relative; z-index: 1; }
+.dashboard-titulo-app { font-size: clamp(1.8rem, 6vw, 3.2rem); font-weight: 800; margin: 0; color: #232323; }
+.dashboard-saludo-grande { font-size: clamp(2.2rem, 8vw, 4.5rem); font-weight: 900; margin: 4px 0 0; color: #232323; opacity: 0.85; }
+
+.boton-jarvis-esquina {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(6px);
+  border: none;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-family: 'Dancing Script', cursive;
+  font-size: 1.2rem;
+  color: #1c1c2e;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+}
+
+.dashboard-flow-bottom {
+  position: relative;
+  overflow: hidden;
+  padding: 24px 16px 32px;
+}
+
+.dashboard-flow-bottom {
+  position: relative;
+  padding: 24px 16px 32px;
+}
+
+.gamif-glass {
+  position: relative;
+  z-index: 1;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.radar-y-lvl { display: flex; flex-direction: column; gap: 16px; align-items: center; }
+.radar-svg { width: 100%; max-width: 320px; height: auto; }
+
+.lvl-xp-bloque { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.lvl-texto {
+  font-family: 'Archivo Black', sans-serif;
+  font-size: 2.2rem;
+  letter-spacing: 2px;
+}
+.xp-decorativo {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 700;
+  color: #6ea85a;
+}
+.barra-nivel { background: var(--border); border-radius: 999px; height: 14px; width: 100%; max-width: 260px; overflow: hidden; }
+.barra-nivel-relleno { background: #1c1c1e; height: 100%; border-radius: 999px; transition: width 0.3s; }
+.xp-detalle { color: var(--muted); font-size: 0.8rem; }
+
+.gamif-botones { display: flex; justify-content: center; gap: 28px; }
+.gamif-boton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.gamif-placeholder {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+  border-top: 1px solid rgba(0,0,0,0.1);
+  padding-top: 12px;
+}
+
+@media (min-width: 768px) {
+  .radar-y-lvl { flex-direction: row; align-items: center; }
+  .radar-contenedor { flex: 1.3; }
+  .lvl-xp-bloque { flex: 1; }
+}
+
+.dashboard-flow {
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  background-image: url('/fondo-hero.jpg');
+  background-size: cover;
+  background-position: center;
 }

@@ -1,40 +1,45 @@
 import { useEffect, useState } from 'react'
 import { supabase } from './supabaseClient'
-import {
-  RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer,
-} from 'recharts'
+import RadarFacetado from './RadarFacetado'
+import { ArrowUp, Sparkles, Award, Store, GraduationCap } from 'lucide-react'
 
-function hoyISO() {
-  return new Date().toISOString().slice(0, 10)
-}
-
+function hoyISO() { return new Date().toISOString().slice(0, 10) }
 function haceNDias(n) {
   const d = new Date()
   d.setDate(d.getDate() - n)
   return d.toISOString().slice(0, 10)
 }
 
+function calcularSaludo() {
+  const ahora = new Date()
+  const minutosDelDia = ahora.getHours() * 60 + ahora.getMinutes()
+  const inicioBuenDia = 4 * 60 + 50   // 4:50am
+  const finBuenDia = 19 * 60          // 7:00pm (exclusivo)
+  const esBuenDia = minutosDelDia >= inicioBuenDia && minutosDelDia < finBuenDia
+  return esBuenDia ? 'Buen día' : 'Linda noche'
+}
+
 export default function Dashboard({ irA }) {
   const [cargando, setCargando] = useState(true)
   const [datos, setDatos] = useState(null)
+  const [vistaGamif, setVistaGamif] = useState(null)
 
   useEffect(() => {
     async function cargar() {
       const hoy = hoyISO()
       const hace7 = haceNDias(7)
+      const { data: { user } } = await supabase.auth.getUser()
 
-      const [habitos, registros7d, journal7d, journalHoy, metas] = await Promise.all([
+      const [habitos, registros7d, journal7d, perfil] = await Promise.all([
         supabase.from('habitos').select('id').eq('activo', true),
         supabase.from('habito_registros').select('fecha').gte('fecha', hace7),
         supabase.from('journal_entradas').select('puntaje_ia').gte('fecha', hace7).not('puntaje_ia', 'is', null),
-        supabase.from('journal_entradas').select('puntaje_ia, comentario_ia').eq('fecha', hoy).maybeSingle(),
-        supabase.from('metas').select('*').eq('completada', false).order('creado_en', { ascending: false }).limit(3),
+        supabase.from('perfil').select('xp, nivel').eq('user_id', user.id).maybeSingle(),
       ])
 
       const totalHabitos = habitos.data?.length || 0
-      const posiblesEn7d = totalHabitos * 7
-      const hechosEn7d = registros7d.data?.length || 0
-      const scoreDisciplina = posiblesEn7d ? Math.round((hechosEn7d / posiblesEn7d) * 100) : 0
+      const posibles = totalHabitos * 7
+      const scoreDisciplina = posibles ? Math.round((registros7d.data.length / posibles) * 100) : 0
 
       const puntajes = journal7d.data?.map((j) => j.puntaje_ia) || []
       const scoreMental = puntajes.length
@@ -42,12 +47,10 @@ export default function Dashboard({ irA }) {
         : 0
 
       setDatos({
-        totalHabitos,
-        scoreDisciplina,
-        scoreMental,
-        tieneDatosMental: puntajes.length > 0,
-        journalHoy: journalHoy.data || null,
-        metas: metas.data || [],
+        totalHabitos, scoreDisciplina, scoreMental,
+        tieneMental: puntajes.length > 0,
+        xp: perfil.data?.xp || 0,
+        nivel: perfil.data?.nivel || 1,
       })
       setCargando(false)
     }
@@ -56,96 +59,74 @@ export default function Dashboard({ irA }) {
 
   if (cargando) return <p className="vacio">Cargando...</p>
 
-  const { scoreDisciplina, scoreMental, tieneDatosMental, journalHoy, metas, totalHabitos } = datos
-
-  const categoriasRadar = [
-    { categoria: 'Físico', valor: 0, real: false },
-    { categoria: 'Mental', valor: scoreMental, real: tieneDatosMental },
-    { categoria: 'Productividad', valor: 0, real: false },
-    { categoria: 'Financiero', valor: 0, real: false },
-    { categoria: 'Disciplina', valor: scoreDisciplina, real: totalHabitos > 0 },
+  const { scoreDisciplina, scoreMental, tieneMental, xp, nivel, totalHabitos } = datos
+  const categorias = [
+    { categoria: 'Físico', valor: 0 },
+    { categoria: 'Mental', valor: scoreMental },
+    { categoria: 'Productividad', valor: 0 },
+    { categoria: 'Financiero', valor: 0 },
+    { categoria: 'Disciplina', valor: scoreDisciplina },
   ]
 
-  const scoresReales = categoriasRadar.filter((c) => c.real).map((c) => c.valor)
-  const scoreGeneral = scoresReales.length
-    ? Math.round(scoresReales.reduce((a, b) => a + b, 0) / scoresReales.length)
-    : 0
-
-  const hora = new Date().getHours()
-  const saludo = hora < 12 ? 'Buenos días' : hora < 19 ? 'Buenas tardes' : 'Buenas noches'
+  const xpDelNivel = xp % 200
+  const pctNivel = Math.round((xpDelNivel / 200) * 100)
+  const saludo = calcularSaludo()
 
   return (
-    <div className="seccion">
-      <h2 className="dashboard-saludo">{saludo}</h2>
-
-      {metas.length > 0 && (
-        <div className="dashboard-card">
-          <div className="dashboard-card-titulo">🎯 Mis Metas</div>
-          {metas.map((m) => {
-            const pct = Math.min(100, Math.round((m.valor_actual / m.valor_objetivo) * 100))
-            return (
-              <div key={m.id} className="meta-mini">
-                <div className="meta-mini-header">
-                  <span>{m.emoji} {m.titulo}</span>
-                  <span className="verde">{pct}%</span>
-                </div>
-                <div className="barra-progreso barra-mini">
-                  <div className="barra-relleno" style={{ width: `${pct}%` }} />
-                </div>
-              </div>
-            )
-          })}
+    <div className="dashboard-flow">
+      <div className="dashboard-flow-top">
+        <div className="dashboard-hero-content">
+          <h1 className="dashboard-titulo-app">Veni, Vidi, Vici</h1>
+          <h2 className="dashboard-saludo-grande">{saludo}</h2>
         </div>
-      )}
-
-      <div className="radar-score-fila">
-        <div className="dashboard-card radar-card">
-          <div className="dashboard-card-titulo">📊 Radar de Rendimiento</div>
-          <div className="radar-contenedor">
-            <ResponsiveContainer width="100%" height={280}>
-              <RadarChart data={categoriasRadar}>
-                <PolarGrid stroke="var(--border)" />
-                <PolarAngleAxis dataKey="categoria" tick={{ fill: 'var(--muted)', fontSize: 12 }} />
-                <Radar dataKey="valor" stroke="var(--accent)" fill="var(--accent)" fillOpacity={0.4} />
-              </RadarChart>
-            </ResponsiveContainer>
-            <div className="radar-score-central">
-              <span className="radar-score-numero">{scoreGeneral}</span>
-              <span className="radar-score-label">SCORE</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="score-grid">
-          {categoriasRadar.map((c) => (
-            <button
-              key={c.categoria}
-              className={`score-card ${!c.real ? 'score-card-proximamente' : ''}`}
-              onClick={() => (c.categoria === 'Disciplina' || c.categoria === 'Mental') && irA('habitos')}
-            >
-              <span className="score-card-titulo">{c.categoria.toUpperCase()}</span>
-              {c.real ? (
-                <>
-                  <span className="score-card-valor">{c.valor}</span>
-                  <span className="score-card-sub">
-                    {c.categoria === 'Disciplina' && `${totalHabitos} hábitos activos`}
-                    {c.categoria === 'Mental' && (journalHoy ? `Hoy: ${journalHoy.puntaje_ia}/10` : 'Últimos 7 días')}
-                  </span>
-                </>
-              ) : (
-                <span className="score-card-proximamente-label">Próximamente</span>
-              )}
-            </button>
-          ))}
-        </div>
+        <button className="boton-jarvis-esquina" onClick={() => irA('jarvis')}>
+          Hablar con Jarvis
+        </button>
       </div>
 
-      <button className="dashboard-tile-grande" onClick={() => irA('jarvis')}>
-        <div className="dashboard-tile-header">
-          <span>🤖 Hablar con Jarvis</span>
+      <div className="dashboard-flow-bottom">
+        <div className="gamif-glass">
+          <div className="radar-y-lvl">
+            <div className="radar-contenedor">
+              <RadarFacetado categorias={categorias} />
+            </div>
+
+            <div className="lvl-xp-bloque">
+              <span className="lvl-texto">LVL {String(nivel).padStart(3, '0')}</span>
+              <span className="xp-decorativo">
+                <ArrowUp size={16} strokeWidth={3} />
+                XP
+                <Sparkles size={16} />
+              </span>
+              <div className="barra-nivel">
+                <div className="barra-nivel-relleno" style={{ width: `${pctNivel}%` }} />
+              </div>
+              <span className="xp-detalle">{xpDelNivel} / 200 XP</span>
+            </div>
+          </div>
+
+          <div className="gamif-botones">
+            <button className="gamif-boton" onClick={() => setVistaGamif('logros')}>
+              <Award size={28} strokeWidth={1.5} />
+              Logros
+            </button>
+            <button className="gamif-boton" onClick={() => setVistaGamif('tienda')}>
+              <Store size={28} strokeWidth={1.5} />
+              Tienda
+            </button>
+            <button className="gamif-boton" onClick={() => setVistaGamif('titulos')}>
+              <GraduationCap size={28} strokeWidth={1.5} />
+              Títulos
+            </button>
+          </div>
+
+          {vistaGamif && (
+            <div className="gamif-placeholder">
+              {vistaGamif === 'logros' ? 'Logros' : vistaGamif === 'tienda' ? 'Tienda' : 'Títulos'} — lo construimos pronto.
+            </div>
+          )}
         </div>
-        <span className="dashboard-tile-sub">Pregúntale sobre tu progreso</span>
-      </button>
+      </div>
     </div>
   )
 }

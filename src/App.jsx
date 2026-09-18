@@ -39,7 +39,8 @@ function App() {
 
   return (
     <div className="app">
-      <nav className="app-nav">
+       <nav className="app-nav">
+        <span className="nav-credito">BY - SAMIR</span>
         {TABS.map((t) => (
           <button
             key={t.id}
