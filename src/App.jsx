@@ -9,7 +9,7 @@ import Finanzas from './Finanzas'
 import Jarvis from './Jarvis'
 import './App.css'
 
- const TABS = [
+const TABS = [
   { id: 'dashboard', label: 'Dashboard' },
   { id: 'habitos', label: 'Hábitos' },
   { id: 'proyectos', label: 'Proyectos' },
@@ -39,8 +39,7 @@ function App() {
 
   return (
     <div className="app">
-       <nav className="app-nav">
-        <span className="nav-credito">BY - SAMIR</span>
+      <nav className="app-nav">
         {TABS.map((t) => (
           <button
             key={t.id}
@@ -50,14 +49,10 @@ function App() {
             {t.label}
           </button>
         ))}
+        <button className="btn-salir-nav" onClick={() => supabase.auth.signOut()}>Salir</button>
       </nav>
 
       <div className="app-content">
-        <header className="app-header">
-          <h1>Veni, Vidi, Vici</h1>
-          <button className="btn-salir" onClick={() => supabase.auth.signOut()}>Salir</button>
-        </header>
-
         <main className="app-main">
           {tab === 'dashboard' && <Dashboard irA={setTab} />}
           {tab === 'habitos' && <HabitosYJournal />}

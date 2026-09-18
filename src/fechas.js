@@ -1,5 +1,16 @@
 export function hoyISO() {
-  return new Date().toISOString().slice(0, 10)
+  const d = new Date()
+  const año = d.getFullYear()
+  const mes = String(d.getMonth() + 1).padStart(2, '0')
+  const dia = String(d.getDate()).padStart(2, '0')
+  return `${año}-${mes}-${dia}`
+}
+
+function formatearFecha(d) {
+  const año = d.getFullYear()
+  const mes = String(d.getMonth() + 1).padStart(2, '0')
+  const dia = String(d.getDate()).padStart(2, '0')
+  return `${año}-${mes}-${dia}`
 }
 
 export function ultimosNDias(n) {
@@ -7,19 +18,19 @@ export function ultimosNDias(n) {
   for (let i = n - 1; i >= 0; i--) {
     const d = new Date()
     d.setDate(d.getDate() - i)
-    dias.push(d.toISOString().slice(0, 10))
+    dias.push(formatearFecha(d))
   }
   return dias
 }
 
 export function diasDeEstaSemana() {
   const hoy = new Date()
-  const diaSemana = hoy.getDay() // 0=domingo ... 6=sábado
+  const diaSemana = hoy.getDay()
   const dias = []
   for (let i = 0; i < 7; i++) {
     const d = new Date(hoy)
     d.setDate(hoy.getDate() - diaSemana + i)
-    dias.push(d.toISOString().slice(0, 10))
+    dias.push(formatearFecha(d))
   }
   return dias
 }
@@ -29,8 +40,6 @@ export function nombreDiaCorto(fechaISO) {
   return dias[new Date(fechaISO + 'T00:00:00').getDay()]
 }
 
-
-//COLORES
 function hexARgb(hex) {
   const n = parseInt(hex.replace('#', ''), 16)
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255]
@@ -46,7 +55,6 @@ function mezclar(colorA, colorB, t) {
 }
 
 export function colorSemaforo(pct) {
-  // pct: 0 a 100
   const ROJO = '#DE3535'
   const AMARILLO = '#EDFF2B'
   const VERDE = '#00B506'

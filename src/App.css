@@ -14,19 +14,6 @@
   min-height: 100dvh;
 }
 
-.app-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--border);
-}
-
-.app-header h1 {
-  font-size: 1.2rem;
-  margin: 0;
-}
-
 .app-main {
   flex: 1;
   padding: 16px;
@@ -57,21 +44,9 @@
   font-weight: 600;
 }
 
-.btn-salir {
-  background: none;
-  border: 1px solid var(--border);
-  color: var(--muted);
-  padding: 6px 12px;
-  border-radius: 8px;
-}
-
-.nav-credito {
-  color: rgba(0,0,0,0.6);
-  font-size: 0.7rem;
-  letter-spacing: 1px;
+.btn-salir-nav {
+  color: #7a1f1f !important;
   font-weight: 700;
-  padding: 0 14px;
-  margin-bottom: 12px;
 }
 
 /* ---------- Desktop: la nav se vuelve sidebar ---------- */
@@ -104,6 +79,11 @@
   .app-nav button.activo {
     background: rgba(255, 255, 255, 0.3);
     color: #0d0d0f;
+  }
+
+  .btn-salir-nav {
+    margin-top: auto;
+    color: #7a1f1f;
   }
 
   .app-content {
@@ -303,7 +283,7 @@
 }
 .subtabs button.activo { background: var(--accent); border-color: var(--accent); color: white; }
 
-/* ---------- Metas (Proyectos+Metas, en pausa pero el código sigue vivo) ---------- */
+/* ---------- Metas ---------- */
 .metas-grid { display: flex; flex-direction: column; gap: 16px; }
 .meta-card {
   background: var(--card);
@@ -332,7 +312,7 @@
   margin-top: 4px;
 }
 
-/* ---------- Proyectos (kanban, en pausa pero el código sigue vivo) ---------- */
+/* ---------- Proyectos (kanban) ---------- */
 .kanban-columna { display: flex; flex-direction: column; gap: 8px; }
 .kanban-titulo { font-weight: 600; color: var(--muted); font-size: 0.9rem; display: flex; gap: 6px; }
 .kanban-card {
@@ -475,20 +455,48 @@
   margin: 0;
 }
 
-/* ---------- Dashboard: fondo continuo (misma imagen, mitad de abajo girada 180°) ---------- */
+/* ---------- Dashboard: fondo continuo con una sola imagen ---------- */
 .dashboard-flow {
+  position: relative;
   border-radius: 24px;
   overflow: hidden;
+  background-image: url('/fondo-hero.jpg');
+  background-size: cover;
+  background-position: center;
 }
 
+.dashboard-flow-top {
+  position: relative;
+  min-height: 50vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 24px 24px;
+}
 
-.dashboard-hero-content { position: relative; z-index: 1; }
-.dashboard-titulo-app { font-size: clamp(1.8rem, 6vw, 3.2rem); font-weight: 800; margin: 0; color: #232323; }
-.dashboard-saludo-grande { font-size: clamp(2.2rem, 8vw, 4.5rem); font-weight: 900; margin: 4px 0 0; color: #232323; opacity: 0.85; }
+.dashboard-hero-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+.dashboard-titulo-app {
+  font-weight: 900;
+  font-size: clamp(1.8rem, 6vw, 3.2rem);
+  margin: 0;
+  color: #1c1c1c;
+}
+.dashboard-saludo-grande {
+  font-weight: 800;
+  font-size: clamp(2.2rem, 8vw, 4.5rem);
+  margin: 4px 0 0;
+  color: #1c1c1c;
+}
 
 .boton-jarvis-esquina {
   position: absolute;
-  bottom: 20px;
+  top: 20px;
   right: 20px;
   background: rgba(255, 255, 255, 0.55);
   backdrop-filter: blur(6px);
@@ -499,12 +507,7 @@
   font-size: 1.2rem;
   color: #1c1c2e;
   box-shadow: 0 4px 14px rgba(0,0,0,0.15);
-}
-
-.dashboard-flow-bottom {
-  position: relative;
-  overflow: hidden;
-  padding: 24px 16px 32px;
+  z-index: 2;
 }
 
 .dashboard-flow-bottom {
@@ -567,11 +570,182 @@
   .lvl-xp-bloque { flex: 1; }
 }
 
-.dashboard-flow {
-  position: relative;
-  border-radius: 24px;
-  overflow: hidden;
-  background-image: url('/fondo-hero.jpg');
-  background-size: cover;
-  background-position: center;
+.titulo-seccion { margin: 0; font-size: 1.2rem; }
+
+.lista-espacios { display: flex; flex-direction: column; gap: 8px; }
+.tarjeta-espacio {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.tarjeta-espacio-nombre {
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: left;
+  flex: 1;
+}
+.tarjeta-espacio-acciones { display: flex; gap: 6px; }
+.tarjeta-espacio-acciones button {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+.fila-titulo-volver { display: flex; align-items: center; gap: 12px; }
+.btn-volver {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+}
+
+.trello-pantalla { display: flex; flex-direction: column; gap: 14px; height: calc(100dvh - 140px); }
+.trello-header { display: flex; align-items: center; }
+
+.trello-columnas-fila {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  flex: 1;
+  padding-bottom: 8px;
+}
+
+.trello-columna {
+  background: #eeeceb;
+  border-radius: 12px;
+  padding: 10px;
+  width: 260px;
+  min-width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 100%;
+}
+
+.trello-columna-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 4px 6px;
+}
+.trello-columna-header span:first-child { flex: 1; cursor: pointer; }
+.trello-contador { color: var(--muted); font-weight: 400; font-size: 0.8rem; }
+.trello-eliminar-col { background: none; border: none; color: var(--muted); font-size: 0.7rem; }
+
+.trello-tarjetas {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+}
+
+.trello-tarjeta {
+  background: white;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.12);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.85rem;
+}
+.trello-etiqueta { display: inline-block; width: 32px; height: 8px; border-radius: 4px; }
+.trello-fecha { color: var(--muted); font-size: 0.75rem; }
+
+.trello-add-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  text-align: left;
+  padding: 6px;
+  font-size: 0.85rem;
+}
+.trello-add-form { display: flex; flex-direction: column; gap: 6px; }
+.trello-add-form textarea, .trello-add-form input {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px;
+  font-family: inherit;
+}
+.trello-add-form .fila { display: flex; gap: 6px; }
+.trello-add-form button {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
+.trello-nueva-columna { background: rgba(0,0,0,0.04); }
+
+.trello-columna-vacia { min-height: 40px; }
+
+.tarjeta-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 16px;
+}
+.tarjeta-detalle {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 20px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.tarjeta-detalle-header { display: flex; gap: 10px; align-items: center; }
+.tarjeta-detalle-titulo {
+  flex: 1;
+  background: none;
+  border: none;
+  border-bottom: 2px solid var(--border);
+  font-size: 1.2rem;
+  font-weight: 700;
+  padding: 4px 0;
+  color: var(--text);
+}
+
+.checklist-lista { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
+.checklist-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg);
+  border-radius: 8px;
+  padding: 6px 10px;
+}
+.checklist-item label { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; }
+.checklist-hecho { text-decoration: line-through; color: var(--muted); }
+
+.tarjeta-detalle-acciones { display: flex; flex-direction: column; gap: 8px; }
+.btn-eliminar-tarjeta {
+  background: none;
+  border: none;
+  color: #b33;
+  font-size: 0.85rem;
+  padding: 6px;
 }

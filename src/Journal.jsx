@@ -4,12 +4,13 @@ import { supabase } from './supabaseClient'
 function sumarDias(fechaISO, n) {
   const d = new Date(fechaISO + 'T00:00:00')
   d.setDate(d.getDate() + n)
-  return d.toISOString().slice(0, 10)
+  const año = d.getFullYear()
+  const mes = String(d.getMonth() + 1).padStart(2, '0')
+  const dia = String(d.getDate()).padStart(2, '0')
+  return `${año}-${mes}-${dia}`
 }
 
-function hoyISO() {
-  return new Date().toISOString().slice(0, 10)
-}
+import { hoyISO } from './fechas'
 
 const CAMPOS_VACIOS = {
   objetivo_dia: '', resumen: '', reflexion: '', aprendizaje: '',

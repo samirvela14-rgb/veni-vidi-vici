@@ -3,11 +3,20 @@ import { supabase } from './supabaseClient'
 import RadarFacetado from './RadarFacetado'
 import { ArrowUp, Sparkles, Award, Store, GraduationCap } from 'lucide-react'
 
-function hoyISO() { return new Date().toISOString().slice(0, 10) }
+export function hoyISO() {
+  const d = new Date()
+  const año = d.getFullYear()
+  const mes = String(d.getMonth() + 1).padStart(2, '0')
+  const dia = String(d.getDate()).padStart(2, '0')
+  return `${año}-${mes}-${dia}`
+}
 function haceNDias(n) {
   const d = new Date()
   d.setDate(d.getDate() - n)
-  return d.toISOString().slice(0, 10)
+  const año = d.getFullYear()
+  const mes = String(d.getMonth() + 1).padStart(2, '0')
+  const dia = String(d.getDate()).padStart(2, '0')
+  return `${año}-${mes}-${dia}`
 }
 
 function calcularSaludo() {

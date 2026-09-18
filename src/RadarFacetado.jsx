@@ -89,7 +89,7 @@ export default function RadarFacetado({ categorias }) {
             textAnchor="middle"
             dominantBaseline="middle"
             fontSize="11"
-            fill="var(--muted)"
+            fill="#1c1c1c"
           >
             {c.categoria}
           </text>
