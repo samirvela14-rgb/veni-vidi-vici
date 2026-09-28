@@ -8,10 +8,12 @@ import Tareas from './Tareas'
 import Finanzas from './Finanzas'
 import Jarvis from './Jarvis'
 import './App.css'
+import Palabra from './Palabra'
 
 const TABS = [
   { id: 'dashboard', label: 'Dashboard' },
   { id: 'habitos', label: 'Hábitos' },
+  { id: 'palabra', label: 'Palabra' },
   { id: 'proyectos', label: 'Proyectos' },
   { id: 'tareas', label: 'Tareas' },
   { id: 'finanzas', label: 'Finanzas' },
@@ -56,6 +58,7 @@ function App() {
         <main className="app-main">
           {tab === 'dashboard' && <Dashboard irA={setTab} />}
           {tab === 'habitos' && <HabitosYJournal />}
+          {tab === 'palabra' && <Palabra />}
           {tab === 'proyectos' && <ProyectosYMetas />}
           {tab === 'tareas' && <Tareas />}
           {tab === 'finanzas' && <Finanzas />}

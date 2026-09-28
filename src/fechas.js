@@ -63,3 +63,9 @@ export function colorSemaforo(pct) {
   }
   return mezclar(AMARILLO, VERDE, (pct - 53) / (100 - 53))
 }
+
+export function sumarDias(fechaISO, n) {
+  const d = new Date(fechaISO + 'T00:00:00')
+  d.setDate(d.getDate() + n)
+  return formatearFecha(d)
+}

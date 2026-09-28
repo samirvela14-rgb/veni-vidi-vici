@@ -48,7 +48,7 @@ export default function EspaciosTrabajo({ onEntrar }) {
         {espacios.map((e) => (
           <div key={e.id} className="tarjeta-espacio">
             <button className="tarjeta-espacio-nombre" onClick={() => onEntrar(e)}>
-              📁 {e.nombre}
+              {e.nombre}
             </button>
             <div className="tarjeta-espacio-acciones">
               <button onClick={() => renombrar(e)}>✎</button>

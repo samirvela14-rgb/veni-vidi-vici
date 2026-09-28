@@ -749,3 +749,41 @@
   font-size: 0.85rem;
   padding: 6px;
 }
+
+/* ---------- Palabra ---------- */
+.palabra-titulo { margin: 0; font-size: 1.1rem; text-align: center; }
+
+.palabra-lectura {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.palabra-evangelio { border-left: 4px solid var(--accent); }
+
+.palabra-etiqueta {
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.palabra-cita { font-weight: 700; }
+.palabra-texto {
+  margin: 0;
+  line-height: 1.65;
+  font-size: 0.95rem;
+  white-space: pre-wrap;
+}
+
+.oracion-card {
+  background: var(--card);
+  border: 1px solid var(--accent);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
