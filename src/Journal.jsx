@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from './supabaseClient'
+import { otorgarXP } from './xp'
 
 function sumarDias(fechaISO, n) {
   const d = new Date(fechaISO + 'T00:00:00')
@@ -71,6 +72,7 @@ export default function Journal() {
 
     setGuardando(false)
     if (error) { alert(error.message); return }
+    if (!entradaId) await otorgarXP('journal') // solo la primera vez que guardas este día
     setEntradaId(data.id)
   }
 
@@ -87,6 +89,7 @@ export default function Journal() {
     setAnalizando(false)
     if (data.error) { alert(data.error); return }
     setAnalisis(data)
+    if (data.puntaje >= 8) await otorgarXP('journal_buen_dia')
   }
 
   const esHoy = fecha === hoyISO()

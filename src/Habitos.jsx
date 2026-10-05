@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from './supabaseClient'
 import { hoyISO, ultimosNDias, diasDeEstaSemana, nombreDiaCorto, colorSemaforo } from './fechas'
+import { otorgarXP, quitarXP } from './xp'
 import {
   DndContext, closestCenter, PointerSensor, useSensor, useSensors,
 } from '@dnd-kit/core'
@@ -8,7 +9,6 @@ import {
   SortableContext, verticalListSortingStrategy, useSortable, arrayMove,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-
 
 function FilaHabito({ h, diasSemana, hoy, estaMarcado, toggle, renombrarHabito, eliminarHabito, modoEdicion }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
@@ -52,6 +52,7 @@ function FilaHabito({ h, diasSemana, hoy, estaMarcado, toggle, renombrarHabito, 
 
 export default function Habitos() {
   const [habitos, setHabitos] = useState([])
+  const [todosHabitos, setTodosHabitos] = useState([])
   const [registros, setRegistros] = useState([])
   const [nombreNuevo, setNombreNuevo] = useState('')
   const [modoEdicion, setModoEdicion] = useState(false)
@@ -65,18 +66,15 @@ export default function Habitos() {
   )
 
   async function cargar() {
-    const { data: hs } = await supabase
-      .from('habitos')
-      .select('*')
-      .eq('activo', true)
-      .order('orden', { ascending: true })
+    const [{ data: hs }, { data: todos }, { data: regs }] = await Promise.all([
+      supabase.from('habitos').select('*').eq('activo', true).order('orden', { ascending: true }),
+      supabase.from('habitos').select('id, creado_en, desactivado_en'),
+      supabase.from('habito_registros').select('habito_id, fecha').gte('fecha', dias84[0]),
+    ])
     setHabitos(hs || [])
-
-    const { data: regs } = await supabase
-      .from('habito_registros')
-      .select('habito_id, fecha')
-      .gte('fecha', dias84[0])
+    setTodosHabitos(todos || [])
     setRegistros(regs || [])
+    return { habitosFrescos: hs || [], registrosFrescos: regs || [] }
   }
 
   useEffect(() => { cargar() }, [])
@@ -84,8 +82,22 @@ export default function Habitos() {
   const estaMarcado = (habitoId, fecha) =>
     registros.some((r) => r.habito_id === habitoId && r.fecha === fecha)
 
+  // Qué hábitos "contaban" en una fecha pasada (útil si cambiaste tu lista de hábitos)
+  function habitosActivosEn(fecha) {
+    return todosHabitos.filter((h) => {
+      const creado = h.creado_en?.slice(0, 10)
+      const desactivado = h.desactivado_en?.slice(0, 10)
+      if (creado && creado > fecha) return false
+      if (desactivado && desactivado <= fecha) return false
+      return true
+    })
+  }
+
   async function toggle(habitoId, fecha) {
-    if (estaMarcado(habitoId, fecha)) {
+    const eraCompletoAntes = habitos.length > 0 && habitos.every((h) => estaMarcado(h.id, fecha))
+    const yaEstaba = estaMarcado(habitoId, fecha)
+
+    if (yaEstaba) {
       await supabase.from('habito_registros').delete()
         .eq('habito_id', habitoId).eq('fecha', fecha)
     } else {
@@ -94,7 +106,18 @@ export default function Habitos() {
         habito_id: habitoId, fecha, user_id: user.id,
       })
     }
-    cargar()
+
+    const { habitosFrescos, registrosFrescos } = await cargar()
+
+    const marcadosAhora = new Set(
+      registrosFrescos.filter((r) => r.fecha === fecha).map((r) => r.habito_id)
+    )
+    const esCompletoAhora = habitosFrescos.length > 0 && habitosFrescos.every((h) => marcadosAhora.has(h.id))
+
+    const tareasXP = [yaEstaba ? quitarXP('habito') : otorgarXP('habito')]
+    if (esCompletoAhora && !eraCompletoAntes) tareasXP.push(otorgarXP('dia_perfecto'))
+    if (!esCompletoAhora && eraCompletoAntes) tareasXP.push(quitarXP('dia_perfecto'))
+    await Promise.all(tareasXP)
   }
 
   async function agregarHabito(e) {
@@ -112,7 +135,9 @@ export default function Habitos() {
 
   async function eliminarHabito(id) {
     if (!confirm('¿Eliminar este hábito? Se conserva tu historial pasado.')) return
-    await supabase.from('habitos').update({ activo: false }).eq('id', id)
+    await supabase.from('habitos').update({
+      activo: false, desactivado_en: new Date().toISOString(),
+    }).eq('id', id)
     cargar()
   }
 
@@ -143,7 +168,8 @@ export default function Habitos() {
   const progresoHoyPct = habitos.length ? Math.round((registrosHoy / habitos.length) * 100) : 0
 
   function diaCompleto(fecha) {
-    return habitos.length > 0 && habitos.every((h) => estaMarcado(h.id, fecha))
+    const activosEseDia = habitosActivosEn(fecha)
+    return activosEseDia.length > 0 && activosEseDia.every((h) => estaMarcado(h.id, fecha))
   }
 
   let mejorRacha = 0, rachaTemp = 0
@@ -207,20 +233,21 @@ export default function Habitos() {
 
       <div className="heatmap-card">
         <div className="heatmap-header"><span>Últimos 84 días</span></div>
-                <div className="heatmap-grid">
-        {dias84.map((f) => {
-            const marcados = habitos.filter((h) => estaMarcado(h.id, f)).length
-            const pct = habitos.length ? (marcados / habitos.length) * 100 : 0
-            const color = habitos.length && marcados > 0 ? colorSemaforo(pct) : undefined
+        <div className="heatmap-grid">
+          {dias84.map((f) => {
+            const habitosDeEseDia = habitosActivosEn(f)
+            const marcados = habitosDeEseDia.filter((h) => estaMarcado(h.id, f)).length
+            const pct = habitosDeEseDia.length ? (marcados / habitosDeEseDia.length) * 100 : 0
+            const color = habitosDeEseDia.length && marcados > 0 ? colorSemaforo(pct) : undefined
             return (
-            <div
+              <div
                 key={f}
                 className="heat-cell"
                 style={color ? { background: color } : undefined}
                 title={f}
-            />
+              />
             )
-        })}
+          })}
         </div>
       </div>
 

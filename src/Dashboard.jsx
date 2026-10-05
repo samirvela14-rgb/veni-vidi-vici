@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react'
 import { supabase } from './supabaseClient'
 import RadarFacetado from './RadarFacetado'
 import { ArrowUp, Sparkles, Award, Store, GraduationCap } from 'lucide-react'
+import Logros from './Logros'
+import Tienda from './Tienda'
+import Titulos from './Titulos'
 
 export function hoyISO() {
   const d = new Date()
@@ -129,11 +132,13 @@ export default function Dashboard({ irA }) {
             </button>
           </div>
 
-          {vistaGamif && (
-            <div className="gamif-placeholder">
-              {vistaGamif === 'logros' ? 'Logros' : vistaGamif === 'tienda' ? 'Tienda' : 'Títulos'} — lo construimos pronto.
-            </div>
-          )}
+                  {vistaGamif && (
+          <div className="gamif-panel">
+            {vistaGamif === 'logros' && <Logros />}
+            {vistaGamif === 'tienda' && <Tienda />}
+            {vistaGamif === 'titulos' && <Titulos nivelActual={nivel} />}
+          </div>
+        )}
         </div>
       </div>
     </div>

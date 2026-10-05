@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from './supabaseClient'
 import { hoyISO, sumarDias } from './fechas'
-
+import { otorgarXP } from './xp'
 async function obtenerToken() {
   const { data: { session } } = await supabase.auth.getSession()
   return session.access_token
@@ -27,6 +27,7 @@ export default function Palabra() {
   const [oracion, setOracion] = useState('')
   const [guardando, setGuardando] = useState(false)
   const [generando, setGenerando] = useState(false)
+  const [existia, setExistia] = useState(false)
 
   useEffect(() => {
     let cancelado = false
@@ -51,8 +52,9 @@ export default function Palabra() {
         if (resp.ok) setLecturas(datos)
         else setError(datos.error || 'No pude cargar las lecturas de este día')
 
-        setReflexion(entrada.data?.reflexion || '')
+                setReflexion(entrada.data?.reflexion || '')
         setOracion(entrada.data?.oracion_ia || '')
+        setExistia(!!entrada.data?.reflexion)
       } catch (e) {
         if (!cancelado) setError(e.message)
       }
@@ -63,7 +65,7 @@ export default function Palabra() {
     return () => { cancelado = true }
   }, [fecha])
 
-  async function guardar() {
+   async function guardar() {
     setGuardando(true)
     const { data: { user } } = await supabase.auth.getUser()
     const { error } = await supabase
@@ -71,9 +73,13 @@ export default function Palabra() {
       .upsert({ user_id: user.id, fecha, reflexion }, { onConflict: 'user_id,fecha' })
     setGuardando(false)
     if (error) { alert(error.message); return false }
+    if (!existia && reflexion.trim()) {
+      await otorgarXP('palabra')
+      setExistia(true)
+    }
     return true
   }
-
+  
   async function pedirOracion() {
     // primero guarda tu reflexión, para que Jarvis la tome en cuenta
     if (!(await guardar())) return

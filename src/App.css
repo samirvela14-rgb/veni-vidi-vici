@@ -787,3 +787,61 @@
   flex-direction: column;
   gap: 8px;
 }
+
+.rojo { color: #d64545; }
+
+.metas-financieras-grid { display: flex; flex-direction: column; gap: 10px; }
+.meta-financiera-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.meta-financiera-card.hecho { border-color: #2ecc71; }
+.meta-financiera-footer { display: flex; align-items: center; gap: 10px; }
+.meta-financiera-footer input { flex: none; width: 100px; }
+.meta-financiera-dias { color: var(--muted); font-size: 0.75rem; }
+
+.barra-categoria { display: flex; align-items: center; gap: 10px; margin-top: 6px; font-size: 0.85rem; }
+.barra-categoria .barra-progreso { flex: 1; }
+
+/* Quita las flechas de los inputs numéricos en todos los navegadores */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.gamif-panel {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.logros-lista, .tienda-lista, .titulos-lista { display: flex; flex-direction: column; gap: 8px; }
+
+.logro-card, .tienda-card, .titulo-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: space-between;
+}
+.logro-card { justify-content: flex-start; }
+.logro-bloqueado { opacity: 0.5; }
+.logro-icono { font-size: 1.4rem; }
+.logro-descripcion { margin: 2px 0 0; color: var(--muted); font-size: 0.8rem; }
+
+.titulo-actual { border-color: var(--accent); }
