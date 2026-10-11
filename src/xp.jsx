@@ -41,9 +41,10 @@ async function multiplicador() {
 
 export async function ajustarXP(cantidad) {
   if (!cantidad) return
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return
-  await supabase.rpc('otorgar_xp', { p_user_id: user.id, p_cantidad: cantidad })
+  // La sesión guardada en el teléfono basta (getUser le preguntaba al servidor cada vez y hacía lento el XP)
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session?.user) return
+  await supabase.rpc('otorgar_xp', { p_user_id: session.user.id, p_cantidad: cantidad })
 }
 
 export async function otorgarXP(motivo) {

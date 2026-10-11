@@ -111,12 +111,22 @@ export default function Habitos() {
     const clave = `${habitoId}|${fecha}`
     if (enProceso.current.has(clave)) return
     enProceso.current.add(clave)
-    try {
-      const eraCompletoAntes = habitos.length > 0 && habitos.every((h) => estaMarcado(h.id, fecha))
-      const yaEstaba = estaMarcado(habitoId, fecha)
-      const { data: { session } } = await supabase.auth.getSession()
 
-      // Funciona sin internet: si no hay red, se guarda en el teléfono y se envía después
+    const yaEstaba = estaMarcado(habitoId, fecha)
+    const quitar = (lista) => lista.filter((x) => !(x.habito_id === habitoId && x.fecha === fecha))
+    const poner = (lista) => [...quitar(lista), { habito_id: habitoId, fecha }]
+
+    // 1) Se marca al instante en la pantalla (sin esperar al servidor)
+    const registrosNuevos = yaEstaba ? quitar(registros) : poner(registros)
+    setRegistros((prev) => (yaEstaba ? quitar(prev) : poner(prev)))
+    const completoDia = (lista) => habitos.length > 0
+      && habitos.every((h) => lista.some((x) => x.habito_id === h.id && x.fecha === fecha))
+    const eraCompletoAntes = completoDia(registros)
+    const esCompletoAhora = completoDia(registrosNuevos)
+
+    // 2) Se guarda por detrás. Funciona sin internet (se envía después) y no se duplica.
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
       const r = await ejecutar(yaEstaba
         ? { tabla: 'habito_registros', accion: 'delete', filtro: { habito_id: habitoId, fecha }, xp: { quitar: ['habito'] } }
         : {
@@ -124,23 +134,15 @@ export default function Habitos() {
             datos: { id: crypto.randomUUID(), habito_id: habitoId, fecha, user_id: session.user.id },
             xp: { otorgar: ['habito'] },
           })
-      if (!r.ok) { alert(r.error); return }
-
-      if (r.pendiente) {
-        // Sin internet: se ve marcado al instante (el bono de día perfecto se cuenta con conexión)
-        setRegistros((prev) => (yaEstaba
-          ? prev.filter((x) => !(x.habito_id === habitoId && x.fecha === fecha))
-          : [...prev, { habito_id: habitoId, fecha }]))
+      if (!r.ok) {
+        // El servidor lo rechazó: se deshace en la pantalla y se avisa
+        setRegistros((prev) => (yaEstaba ? poner(prev) : quitar(prev)))
+        alert(r.error)
         return
       }
-
-      const { habitosFrescos, registrosFrescos } = await cargar()
-      const marcadosAhora = new Set(
-        registrosFrescos.filter((x) => x.fecha === fecha).map((x) => x.habito_id)
-      )
-      const esCompletoAhora = habitosFrescos.length > 0 && habitosFrescos.every((h) => marcadosAhora.has(h.id))
-      if (esCompletoAhora && !eraCompletoAntes) await otorgarXP('dia_perfecto')
-      if (!esCompletoAhora && eraCompletoAntes) await quitarXP('dia_perfecto')
+      // Bono de día perfecto (con conexión; sin internet se cuenta al volver a abrir)
+      if (!r.pendiente && esCompletoAhora && !eraCompletoAntes) await otorgarXP('dia_perfecto')
+      if (!r.pendiente && !esCompletoAhora && eraCompletoAntes) await quitarXP('dia_perfecto')
     } finally {
       enProceso.current.delete(clave)
     }
