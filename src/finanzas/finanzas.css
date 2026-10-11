@@ -1,0 +1,199 @@
+/* =====================================================================
+   Finanzas — dashboard estilo Fintonic con la paleta editorial
+   (usa los tokens de :root en App.css)
+   ===================================================================== */
+.fin {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.fin-mes { display: flex; align-items: center; gap: 6px; }
+.fin-mes span { font-size: 1.35rem; letter-spacing: -0.014em; min-width: 150px; text-align: center; }
+.fin-mes button {
+  background: none;
+  border: none;
+  color: #b4b2a9;
+  display: flex;
+  padding: 4px;
+  border-radius: 6px;
+  transition: color 0.2s;
+}
+.fin-mes button:hover:not(:disabled) { color: var(--wine); }
+.fin-mes button:disabled { color: var(--border); cursor: default; }
+
+.fin-header-acciones { display: flex; gap: 8px; }
+.fin-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: 18px;
+  color: var(--text);
+  text-align: left;
+  font: inherit;
+  width: 100%;
+}
+.fin-etiqueta { display: block; font-size: 0.75rem; color: var(--muted); margin-bottom: 10px; }
+.fin-fila { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.fin-fila-sec { margin-top: 6px; color: var(--muted); font-size: 0.9rem; }
+.fin-grande { font-size: 1.9rem; letter-spacing: -0.022em; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.fin-mediano { font-size: 1.15rem; color: var(--text); font-variant-numeric: tabular-nums; }
+
+.fin-pie {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  border-top: 1px solid var(--border);
+  margin-top: 16px;
+  padding-top: 12px;
+  font-size: 0.85rem;
+}
+.fin-link { background: none; border: none; color: var(--text); display: flex; align-items: center; gap: 6px; padding: 0; }
+.fin-link b { font-weight: 600; }
+.fin-protegido { color: var(--violet); display: flex; align-items: center; gap: 4px; }
+
+.fin-totales {
+  display: flex;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 4px 0;
+  text-align: left;
+  color: var(--text);
+}
+.fin-totales > div { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.fin-totales > div + div { border-left: 1px solid var(--border); padding-left: 18px; }
+.fin-totales span:last-child { font-size: 0.8rem; }
+
+.presu-barras { display: flex; flex-direction: column; gap: 4px; }
+.presu-barra { padding: 6px 0; }
+.presu-barra-fila { display: flex; align-items: center; gap: 10px; font-size: 0.875rem; }
+.presu-barra-nombre { width: 118px; flex: none; }
+.presu-barra .barra-progreso { flex: 1; }
+.presu-barra-pct { width: 40px; text-align: right; font-size: 0.8rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.presu-mas { background: none; border: none; color: var(--muted); display: flex; padding: 2px; border-radius: 6px; }
+.presu-mas:hover, .presu-mas[aria-expanded="true"] { color: var(--text); background: var(--sunken); }
+.barra-pasada { background: var(--negativo); }
+.presu-alerta { display: block; font-size: 0.72rem; margin: 2px 0 0 128px; color: var(--muted); }
+.presu-alerta.alto { color: var(--negativo); }
+.presu-alerta.medio { color: var(--wine); }
+.presu-subs {
+  margin: 8px 0 4px 128px;
+  padding-left: 10px;
+  border-left: 1px solid var(--border);
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.presu-subs div { display: flex; justify-content: space-between; padding: 3px 0; font-variant-numeric: tabular-nums; }
+
+.fin-panel { display: flex; align-items: center; gap: 16px; }
+button.fin-panel { cursor: pointer; transition: border-color 0.2s; }
+button.fin-panel:hover { border-color: var(--lilac); }
+.fin-panel-texto { flex: 1; display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; line-height: 1.45; min-width: 0; }
+.fin-panel-titulo { font-size: 1.1rem; letter-spacing: -0.008em; color: var(--text); }
+.agregar-monto { display: flex; align-items: baseline; justify-content: center; gap: 6px; }
+.agregar-monto span { font-size: 1.6rem; color: var(--muted); }
+.agregar-monto input {
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 3rem;
+  letter-spacing: -0.028em;
+  color: var(--text);
+  width: 6ch;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  outline: none;
+}
+.agregar-fecha {
+  position: relative;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--muted);
+  padding: 4px 10px;
+  border-radius: 99px;
+  cursor: pointer;
+}
+.agregar-fecha:hover { background: var(--sunken); }
+.agregar-fecha input { position: absolute; inset: 0; opacity: 0; pointer-events: none; }
+
+/* ---------- Popup de metas ---------- */
+.metas-pop { display: flex; flex-direction: column; gap: 10px; }
+.meta-item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.meta-item.hecho { border-color: var(--lagoon); }
+.meta-item.deuda { background: #f7f5f0; border-style: dashed; }
+.meta-item-top, .meta-item-bottom { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.meta-item-nombre { font-size: 1rem; }
+.chip-logrado { background: var(--lagoon); color: #fff; font-size: 0.75rem; padding: 3px 10px; border-radius: 99px; }
+.segmentos { display: flex; gap: 4px; }
+.segmentos span { flex: 1; height: 8px; border-radius: 9px; background: var(--border); }
+.segmentos span.lleno { background: var(--wine); }
+
+/* ---------- Movimientos ---------- */
+.movs { list-style: none; display: flex; flex-direction: column; }
+.movs li { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.movs li:last-child { border-bottom: none; }
+.mov-icono {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+.mov-icono.ingreso { background: rgba(47, 107, 94, 0.1); color: var(--positivo); }
+.mov-texto { flex: 1; display: flex; flex-direction: column; min-width: 0; font-size: 0.92rem; }
+.mov-texto .texto-suave { font-size: 0.75rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mov-monto { font-variant-numeric: tabular-nums; font-size: 0.95rem; white-space: nowrap; }
+
+/* ---------- Mi presupuesto ---------- */
+.presu { display: flex; flex-direction: column; gap: 14px; }
+.presu-resumen { display: flex; flex-direction: column; gap: 10px; }
+.presu-reparto { display: flex; flex-wrap: wrap; gap: 6px; }
+.presu-reparto span { background: var(--bg); border-radius: 99px; padding: 4px 10px; font-size: 0.78rem; }
+.presu-reparto b { font-weight: 600; }
+.presu-reglas { display: flex; gap: 10px; }
+.presu-grupo { display: flex; flex-direction: column; gap: 6px; border-top: 1px solid var(--border); padding-top: 12px; }
+.presu-grupo-header { display: flex; justify-content: space-between; font-size: 0.95rem; }
+.presu-fila { display: flex; align-items: center; gap: 8px; }
+.presu-fila > svg { flex: none; color: var(--muted); }
+.presu-fila .presu-nombre { flex: 1; min-width: 0; padding: 7px 10px; font-size: 0.9rem; }
+.presu-fila .presu-monto { width: 92px; flex: none; padding: 7px 10px; font-size: 0.9rem; text-align: right; font-variant-numeric: tabular-nums; }
+.presu-nueva { display: flex; flex-direction: column; gap: 8px; background: var(--bg); border-radius: var(--radius-sm); padding: 10px; }
+.iconos-elegir { display: flex; flex-wrap: wrap; gap: 4px; }
+.iconos-elegir button {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: var(--card);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.iconos-elegir button.activo { background: var(--lilac); border-color: var(--text); }
+
+@media (max-width: 380px) {
+  .presu-barra-nombre { width: 96px; }
+  .presu-alerta, .presu-subs { margin-left: 106px; }
+  .fin-grande { font-size: 1.6rem; }
+}

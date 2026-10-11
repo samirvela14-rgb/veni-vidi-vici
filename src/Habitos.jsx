@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { supabase } from './supabaseClient'
-import { hoyISO, ultimosNDias, diasDeEstaSemana, nombreDiaCorto, colorSemaforo } from './fechas'
+import { hoyISO, ultimosNDias, diasDeEstaSemana, nombreDiaCorto, colorSemaforo, fechaLocal } from './fechas'
 import { otorgarXP, quitarXP } from './xp'
+import { aplicarProtectores } from './gamificacion/dias'
+import { ejecutar } from './offline/cola'
 import {
   DndContext, closestCenter, PointerSensor, useSensor, useSensors,
 } from '@dnd-kit/core'
@@ -54,6 +56,8 @@ export default function Habitos() {
   const [habitos, setHabitos] = useState([])
   const [todosHabitos, setTodosHabitos] = useState([])
   const [registros, setRegistros] = useState([])
+  const [especiales, setEspeciales] = useState(new Map()) // fecha -> 'protector' | 'descanso'
+  const enProceso = useRef(new Set())
   const [nombreNuevo, setNombreNuevo] = useState('')
   const [modoEdicion, setModoEdicion] = useState(false)
 
@@ -66,18 +70,27 @@ export default function Habitos() {
   )
 
   async function cargar() {
-    const [{ data: hs }, { data: todos }, { data: regs }] = await Promise.all([
+    const [{ data: hs }, historial, { data: regs }, { data: esp }] = await Promise.all([
       supabase.from('habitos').select('*').eq('activo', true).order('orden', { ascending: true }),
-      supabase.from('habitos').select('id, creado_en, desactivado_en'),
+      supabase.from('habitos').select('id, creado_en, desactivado_en, activo'),
       supabase.from('habito_registros').select('habito_id, fecha').gte('fecha', dias84[0]),
+      supabase.from('dias_especiales').select('fecha, tipo').gte('fecha', dias84[0]),
     ])
+    setEspeciales(new Map((esp || []).map((e) => [e.fecha, e.tipo])))
+    let todos = historial.data
+    if (historial.error) {
+      // Sin la columna desactivado_en el heatmap quedaba vacío: se usa solo lo que exista
+      const respaldo = await supabase.from('habitos').select('id, creado_en, activo')
+      todos = (respaldo.data || []).filter((h) => h.activo !== false)
+    }
     setHabitos(hs || [])
     setTodosHabitos(todos || [])
     setRegistros(regs || [])
     return { habitosFrescos: hs || [], registrosFrescos: regs || [] }
   }
 
-  useEffect(() => { cargar() }, [])
+  // Si ayer fallaste y tienes un protector guardado, se usa solo antes de cargar
+  useEffect(() => { aplicarProtectores().finally(cargar) }, [])
 
   const estaMarcado = (habitoId, fecha) =>
     registros.some((r) => r.habito_id === habitoId && r.fecha === fecha)
@@ -85,8 +98,8 @@ export default function Habitos() {
   // Qué hábitos "contaban" en una fecha pasada (útil si cambiaste tu lista de hábitos)
   function habitosActivosEn(fecha) {
     return todosHabitos.filter((h) => {
-      const creado = h.creado_en?.slice(0, 10)
-      const desactivado = h.desactivado_en?.slice(0, 10)
+      const creado = fechaLocal(h.creado_en)
+      const desactivado = fechaLocal(h.desactivado_en)
       if (creado && creado > fecha) return false
       if (desactivado && desactivado <= fecha) return false
       return true
@@ -94,30 +107,43 @@ export default function Habitos() {
   }
 
   async function toggle(habitoId, fecha) {
-    const eraCompletoAntes = habitos.length > 0 && habitos.every((h) => estaMarcado(h.id, fecha))
-    const yaEstaba = estaMarcado(habitoId, fecha)
+    // Evita el doble toque: mientras se guarda, ese círculo no responde otra vez
+    const clave = `${habitoId}|${fecha}`
+    if (enProceso.current.has(clave)) return
+    enProceso.current.add(clave)
+    try {
+      const eraCompletoAntes = habitos.length > 0 && habitos.every((h) => estaMarcado(h.id, fecha))
+      const yaEstaba = estaMarcado(habitoId, fecha)
+      const { data: { session } } = await supabase.auth.getSession()
 
-    if (yaEstaba) {
-      await supabase.from('habito_registros').delete()
-        .eq('habito_id', habitoId).eq('fecha', fecha)
-    } else {
-      const { data: { user } } = await supabase.auth.getUser()
-      await supabase.from('habito_registros').insert({
-        habito_id: habitoId, fecha, user_id: user.id,
-      })
+      // Funciona sin internet: si no hay red, se guarda en el teléfono y se envía después
+      const r = await ejecutar(yaEstaba
+        ? { tabla: 'habito_registros', accion: 'delete', filtro: { habito_id: habitoId, fecha }, xp: { quitar: ['habito'] } }
+        : {
+            tabla: 'habito_registros', accion: 'insert',
+            datos: { id: crypto.randomUUID(), habito_id: habitoId, fecha, user_id: session.user.id },
+            xp: { otorgar: ['habito'] },
+          })
+      if (!r.ok) { alert(r.error); return }
+
+      if (r.pendiente) {
+        // Sin internet: se ve marcado al instante (el bono de día perfecto se cuenta con conexión)
+        setRegistros((prev) => (yaEstaba
+          ? prev.filter((x) => !(x.habito_id === habitoId && x.fecha === fecha))
+          : [...prev, { habito_id: habitoId, fecha }]))
+        return
+      }
+
+      const { habitosFrescos, registrosFrescos } = await cargar()
+      const marcadosAhora = new Set(
+        registrosFrescos.filter((x) => x.fecha === fecha).map((x) => x.habito_id)
+      )
+      const esCompletoAhora = habitosFrescos.length > 0 && habitosFrescos.every((h) => marcadosAhora.has(h.id))
+      if (esCompletoAhora && !eraCompletoAntes) await otorgarXP('dia_perfecto')
+      if (!esCompletoAhora && eraCompletoAntes) await quitarXP('dia_perfecto')
+    } finally {
+      enProceso.current.delete(clave)
     }
-
-    const { habitosFrescos, registrosFrescos } = await cargar()
-
-    const marcadosAhora = new Set(
-      registrosFrescos.filter((r) => r.fecha === fecha).map((r) => r.habito_id)
-    )
-    const esCompletoAhora = habitosFrescos.length > 0 && habitosFrescos.every((h) => marcadosAhora.has(h.id))
-
-    const tareasXP = [yaEstaba ? quitarXP('habito') : otorgarXP('habito')]
-    if (esCompletoAhora && !eraCompletoAntes) tareasXP.push(otorgarXP('dia_perfecto'))
-    if (!esCompletoAhora && eraCompletoAntes) tareasXP.push(quitarXP('dia_perfecto'))
-    await Promise.all(tareasXP)
   }
 
   async function agregarHabito(e) {
@@ -135,9 +161,10 @@ export default function Habitos() {
 
   async function eliminarHabito(id) {
     if (!confirm('¿Eliminar este hábito? Se conserva tu historial pasado.')) return
-    await supabase.from('habitos').update({
+    const { error } = await supabase.from('habitos').update({
       activo: false, desactivado_en: new Date().toISOString(),
     }).eq('id', id)
+    if (error) { alert(error.message); return }
     cargar()
   }
 
@@ -168,6 +195,8 @@ export default function Habitos() {
   const progresoHoyPct = habitos.length ? Math.round((registrosHoy / habitos.length) * 100) : 0
 
   function diaCompleto(fecha) {
+    // Días protegidos o de descanso (comprados en la Tienda) no rompen la racha
+    if (especiales.has(fecha)) return true
     const activosEseDia = habitosActivosEn(fecha)
     return activosEseDia.length > 0 && activosEseDia.every((h) => estaMarcado(h.id, fecha))
   }
@@ -178,8 +207,10 @@ export default function Habitos() {
     else rachaTemp = 0
   })
 
-  const diasCompletosUlt30 = ultimosNDias(30).filter(diaCompleto).length
-  const tasaMensual = Math.round((diasCompletosUlt30 / 30) * 100)
+  // Los días de descanso no cuentan en la tasa (ni a favor ni en contra)
+  const ult30 = ultimosNDias(30).filter((f) => especiales.get(f) !== 'descanso')
+  const diasCompletosUlt30 = ult30.filter(diaCompleto).length
+  const tasaMensual = ult30.length ? Math.round((diasCompletosUlt30 / ult30.length) * 100) : 0
 
   return (
     <div className="seccion">
@@ -238,13 +269,16 @@ export default function Habitos() {
             const habitosDeEseDia = habitosActivosEn(f)
             const marcados = habitosDeEseDia.filter((h) => estaMarcado(h.id, f)).length
             const pct = habitosDeEseDia.length ? (marcados / habitosDeEseDia.length) * 100 : 0
-            const color = habitosDeEseDia.length && marcados > 0 ? colorSemaforo(pct) : undefined
+            const especial = especiales.get(f)
+            // Día pasado sin nada = rojo; hoy se queda neutro mientras sigue en curso
+            const pintar = !especial && habitosDeEseDia.length > 0 && (marcados > 0 || f < hoy)
+            const color = pintar ? colorSemaforo(pct) : undefined
             return (
               <div
                 key={f}
-                className="heat-cell"
+                className={`heat-cell ${especial ? `heat-${especial}` : ''}`}
                 style={color ? { background: color } : undefined}
-                title={f}
+                title={especial === 'protector' ? `${f} · protegido 🛡️` : especial === 'descanso' ? `${f} · descanso 😴` : f}
               />
             )
           })}

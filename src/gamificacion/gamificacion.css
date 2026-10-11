@@ -1,0 +1,190 @@
+/* =====================================================================
+   Gamificación: monedas, objetivos, tienda, logros y títulos
+   (usa los tokens de :root en App.css y las piezas de ui/ui.css)
+   ===================================================================== */
+
+/* ---------- Dashboard ---------- */
+.boton-objetivos {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 99px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--text);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+.punto-aviso {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--wine);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9);
+  animation: latido 1.6s ease-in-out infinite;
+}
+@keyframes latido { 50% { transform: scale(1.35); } }
+
+.aviso-juego {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--lilac);
+  border: 1px solid var(--text);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 0.85rem;
+}
+.aviso-juego > div { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.aviso-juego button { background: none; border: none; color: var(--text); display: flex; padding: 2px; }
+
+.lvl-titulo { font-size: 1.35rem; line-height: 1; margin-top: -2px; }
+.lvl-chips { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-top: 2px; }
+.chip-monedas {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 4px 12px;
+  font-size: 0.9rem;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  transition: border-color 0.15s;
+}
+.chip-monedas:hover { border-color: var(--wine); }
+.chip-doble { background: var(--wine); color: #fff; border-radius: 99px; padding: 4px 12px; font-size: 0.8rem; }
+.gamif-conteo { font-size: 0.7rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.gamif-boton:disabled { opacity: 0.5; }
+
+/* ---------- Tienda ---------- */
+.tienda { display: flex; flex-direction: column; gap: 14px; }
+.tienda-saldo { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 0 2px; }
+.tienda-saldo-num { font-size: 2.6rem; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+.tienda-saldo-num span { font-size: 0.6em; }
+.tienda-saldo .texto-suave { font-size: 0.75rem; }
+.tienda-editar { align-self: flex-end; margin-bottom: -6px; }
+
+.tienda-nivel { display: flex; flex-direction: column; gap: 4px; }
+.tienda-nivel-header { display: flex; justify-content: space-between; align-items: baseline; font-size: 0.95rem; }
+.tienda-nivel-header .texto-suave { font-size: 0.75rem; }
+.tienda-nivel ul, .tienda-poderes, .tienda-historial { list-style: none; display: flex; flex-direction: column; }
+.tienda-nivel li, .tienda-poderes li { display: flex; align-items: center; gap: 4px; border-bottom: 1px solid var(--border); }
+.tienda-nivel li:last-child, .tienda-poderes li:last-child { border-bottom: none; }
+
+.tienda-item, .tienda-poder {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: none;
+  padding: 10px 2px;
+  text-align: left;
+  color: var(--text);
+  font-size: 0.92rem;
+}
+.tienda-item:disabled { cursor: default; }
+.tienda-item-emoji { font-size: 1.3rem; width: 28px; text-align: center; flex: none; }
+.tienda-item-nombre { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tienda-precio {
+  flex: none;
+  font-size: 0.8rem;
+  padding: 3px 10px;
+  border-radius: 99px;
+  background: var(--bg);
+  font-variant-numeric: tabular-nums;
+}
+.tienda-precio.caro { color: var(--muted); }
+.tienda-precio.grande { font-size: 1.1rem; padding: 4px 14px; background: var(--lilac); }
+.tienda-poder-texto { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.tienda-poder-texto .texto-suave { font-size: 0.75rem; line-height: 1.35; }
+
+.tienda-nuevo { display: flex; gap: 6px; align-items: center; }
+.tienda-nuevo input {
+  flex: 1;
+  min-width: 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+.tienda-nuevo input:focus { outline: none; border-color: var(--violet); box-shadow: var(--ring); }
+.tienda-nuevo .tienda-nuevo-emoji { flex: 0 0 44px; text-align: center; font-size: 1.1rem; }
+.tienda-nuevo .tienda-nuevo-monto { flex: 0 0 92px; }
+
+.tienda-historial li { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+.tienda-historial li > span:first-child { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tienda-historial .texto-suave { font-size: 0.75rem; }
+
+.tienda-detalle { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+.tienda-detalle-emoji { font-size: 3.2rem; line-height: 1; }
+.tienda-detalle h2 { font-size: 1.4rem; }
+.tienda-detalle .boton-grande, .tienda-detalle .boton-secundario { width: 100%; }
+.tienda-hecho { font-size: 1.05rem; color: var(--lagoon); padding: 8px 0; }
+.tienda-check { display: flex; align-items: flex-start; gap: 8px; font-size: 0.85rem; text-align: left; background: var(--bg); border-radius: var(--radius-sm); padding: 10px 12px; }
+.tienda-check input { accent-color: var(--wine); margin-top: 2px; }
+.tienda-ajuste { width: 100%; text-align: left; }
+.opciones.centradas { justify-content: center; }
+
+/* ---------- Logros ---------- */
+.logros { display: flex; flex-direction: column; gap: 16px; }
+.logros-resumen { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.logros-resumen .barra-progreso { width: 100%; }
+.logros-resumen .texto-suave { font-size: 0.75rem; }
+.logros-num { font-size: 2.4rem; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+.logros-num span { font-size: 0.5em; color: var(--muted); }
+.logros-area ul { list-style: none; display: flex; flex-direction: column; }
+.logros-area li { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.logros-area li:last-child { border-bottom: none; }
+.logro-medalla { font-size: 1.6rem; width: 32px; text-align: center; flex: none; filter: grayscale(1); opacity: 0.45; }
+.logros-area li.tengo .logro-medalla { filter: none; opacity: 1; }
+.logro-texto { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.logro-titulo { font-size: 0.95rem; }
+.logros-area li:not(.tengo) .logro-titulo { color: var(--muted); }
+.logro-texto .texto-suave { font-size: 0.75rem; }
+.logro-texto .barra-con-pct { margin-top: 4px; }
+.logro-premio { flex: none; font-size: 0.75rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.logros-area li.tengo .logro-premio { color: var(--lagoon); }
+
+/* ---------- Títulos ---------- */
+.titulos { display: flex; flex-direction: column; gap: 16px; }
+.titulos ul { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.titulos li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+.titulos li.actual { background: var(--lilac); border-color: var(--text); }
+.titulos li.bloqueado { opacity: 0.5; }
+.titulo-nombre { flex: 1; font-family: 'Dancing Script', cursive; font-size: 1.4rem; line-height: 1; }
+.titulos li .texto-suave { font-size: 0.78rem; }
+.titulos .chip-logrado { display: inline-flex; align-items: center; gap: 3px; }
+.titulo-personal { display: flex; flex-direction: column; gap: 6px; }
+.titulo-personal .link-violeta { display: inline; padding: 0; }
+
+/* ---------- Objetivos semanales ---------- */
+.objetivos { display: flex; flex-direction: column; gap: 10px; }
+.objetivos ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.objetivos li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+.objetivos li.cobrado { border-color: var(--lagoon); }
+.objetivo-emoji { font-size: 1.5rem; flex: none; }
+.objetivo-texto { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; font-size: 0.92rem; }

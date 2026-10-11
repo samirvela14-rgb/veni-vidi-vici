@@ -32,8 +32,8 @@ export default function RadarFacetado({ categorias }) {
     <svg viewBox="0 0 300 300" className="radar-svg">
       <defs>
         <linearGradient id="facetaClaro" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#5eead4" />
-          <stop offset="100%" stopColor="#0f766e" />
+          <stop offset="0%" stopColor="#4f9a91" />
+          <stop offset="100%" stopColor="#0c4243" />
         </linearGradient>
       </defs>
 
@@ -73,7 +73,7 @@ export default function RadarFacetado({ categorias }) {
             points={`${centro.x},${centro.y} ${p.x},${p.y} ${siguiente.x},${siguiente.y}`}
             fill="url(#facetaClaro)"
             opacity={opacidad}
-            stroke="#0f766e"
+            stroke="#0c4243"
             strokeWidth="1"
           />
         )
@@ -89,7 +89,7 @@ export default function RadarFacetado({ categorias }) {
             textAnchor="middle"
             dominantBaseline="middle"
             fontSize="11"
-            fill="#1c1c1c"
+            fill="var(--text)"
           >
             {c.categoria}
           </text>
