@@ -33,37 +33,64 @@
 .app-main {
   flex: 1;
   padding: 16px;
-  padding-bottom: 90px;
+  padding-bottom: calc(104px + env(safe-area-inset-bottom));
 }
 
+/* Celular: barra flotante de vidrio que se desliza de lado.
+   La pestaña activa se abre en píldora lila con su nombre completo y queda centrada */
 .app-nav {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  left: 10px;
+  right: 10px;
+  bottom: calc(10px + env(safe-area-inset-bottom));
   z-index: 40;
   display: flex;
-  background: rgba(242, 240, 235, 0.8);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-top: 1px solid var(--border);
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  scroll-padding-inline: 12px;
+  /* Bordes que se desvanecen: se nota que hay más íconos a los lados */
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
 }
+.app-nav::-webkit-scrollbar { display: none; }
 
 .app-nav button {
-  flex: 1;
+  flex: 0 0 auto;
+  min-width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 12px;
   background: none;
   border: none;
+  border-radius: 18px;
   color: var(--muted);
-  padding: 14px 4px;
-  font-size: 0.75rem;
+  transition: background 0.2s, color 0.2s, padding 0.2s;
 }
+.app-nav button svg { flex: none; }
+.app-nav button span { display: none; font-size: 0.85rem; white-space: nowrap; }
+.app-nav button:active { transform: scale(0.94); }
 
 .app-nav button.activo {
-  color: var(--wine);
-  font-weight: 600;
+  background: var(--lilac);
+  color: var(--text);
+  padding: 0 16px 0 14px;
 }
+.app-nav button.activo span { display: inline; }
 
 .btn-salir-nav {
+  flex: 0 0 auto !important;
   color: var(--negativo) !important;
 }
 
@@ -84,13 +111,28 @@
     border-radius: var(--radius-card);
     background: var(--wine);
     backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     border: none;
     padding: 24px 12px;
     gap: 4px;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    align-items: stretch;
+    overflow: visible;
+    -webkit-mask-image: none;
+    mask-image: none;
   }
+
+  /* En la compu el menú sigue siendo letra manuscrita, sin íconos */
+  .app-nav button svg { display: none; }
+  .app-nav button span { display: inline; font-size: inherit; }
+  .app-nav button:active { transform: none; }
 
   .app-nav button {
     flex: none;
+    height: auto;
+    justify-content: flex-start;
     text-align: left;
     padding: 6px 14px;
     border-radius: var(--radius-sm);
@@ -103,12 +145,14 @@
   .app-nav button:hover { color: #fff; background: rgba(255, 255, 255, 0.06); }
 
   .app-nav button.activo {
+    flex-grow: 0;
     background: var(--lilac);
     color: var(--text);
   }
 
   .btn-salir-nav {
     margin-top: auto;
+    flex: none !important;
     color: rgba(255, 255, 255, 0.5) !important;
   }
 
@@ -372,61 +416,6 @@
 }
 .subtabs button.activo { background: var(--lilac); }
 
-/* ---------- Metas ---------- */
-.metas-grid { display: flex; flex-direction: column; gap: 16px; }
-.meta-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-card);
-  overflow: hidden;
-}
-.meta-foto {
-  height: 160px;
-  background-size: cover;
-  background-position: center;
-}
-.meta-card-body { padding: 16px; display: flex; flex-direction: column; gap: 8px; }
-.meta-card-header { display: flex; justify-content: space-between; align-items: center; }
-.meta-emoji { font-size: 1.3rem; }
-.meta-card-body h3 { margin: 0; font-size: 1.2rem; }
-.meta-objetivo-label { color: var(--muted); font-size: 0.875rem; }
-.meta-progreso-fila { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
-.meta-falta { font-size: 0.875rem; color: var(--muted); }
-.meta-input-valor { padding: 8px 10px; margin-top: 4px; }
-.meta-mini-header { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
-.progreso-label { color: var(--muted); font-size: 0.8rem; font-variant-numeric: tabular-nums; }
-
-/* ---------- Proyectos (kanban) ---------- */
-.kanban-columna { display: flex; flex-direction: column; gap: 8px; }
-.kanban-titulo { font-weight: 540; color: var(--muted); font-size: 0.875rem; display: flex; gap: 6px; }
-.kanban-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-card);
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.kanban-card-header { display: flex; justify-content: space-between; align-items: center; }
-.chip-etiqueta {
-  background: var(--lilac);
-  color: var(--text);
-  font-size: 0.7rem;
-  padding: 2px 10px;
-  border-radius: 999px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-.chip-btn {
-  background: var(--card);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 6px 12px;
-  border-radius: 999px;
-  font-size: 0.8rem;
-}
-
 /* ---------- Jarvis (chat) ---------- */
 .jarvis-chat { height: calc(100dvh - 160px); display: flex; flex-direction: column; }
 .jarvis-mensajes {
@@ -666,202 +655,12 @@
   transition: background 0.2s;
 }
 .gamif-boton:hover { background: var(--lilac); }
-.gamif-placeholder {
-  text-align: center;
-  color: var(--muted);
-  font-size: 0.85rem;
-  border-top: 1px solid var(--border);
-  padding-top: 12px;
-}
 
 @media (min-width: 768px) {
   .radar-y-lvl { flex-direction: row; align-items: center; }
   .radar-contenedor { flex: 1.3; }
   .lvl-xp-bloque { flex: 1; }
   .gamif-glass { padding: 32px; }
-}
-
-.titulo-seccion { margin: 0; font-size: 1.75rem; letter-spacing: -0.022em; }
-
-.lista-espacios { display: flex; flex-direction: column; gap: 8px; }
-.tarjeta-espacio {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-card);
-  padding: 14px 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.tarjeta-espacio-nombre {
-  background: none;
-  border: none;
-  color: var(--text);
-  font-size: 1rem;
-  font-weight: 540;
-  text-align: left;
-  flex: 1;
-}
-.tarjeta-espacio-acciones { display: flex; gap: 6px; }
-.tarjeta-espacio-acciones button {
-  background: none;
-  border: 1px solid var(--border);
-  color: var(--muted);
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 0.8rem;
-}
-.fila-titulo-volver { display: flex; align-items: center; gap: 12px; }
-.btn-volver {
-  background: none;
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 6px 12px;
-  border-radius: var(--radius-sm);
-  font-size: 0.8rem;
-}
-
-.trello-pantalla { display: flex; flex-direction: column; gap: 14px; height: calc(100dvh - 140px); }
-.trello-header { display: flex; align-items: center; }
-
-.trello-columnas-fila {
-  display: flex;
-  gap: 14px;
-  overflow-x: auto;
-  flex: 1;
-  padding-bottom: 8px;
-}
-
-.trello-columna {
-  background: var(--sunken);
-  border-radius: var(--radius-card);
-  padding: 10px;
-  width: 270px;
-  min-width: 270px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  max-height: 100%;
-}
-
-.trello-columna-header {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 540;
-  font-size: 0.9rem;
-  padding: 4px 6px;
-}
-.trello-columna-header span:first-child { flex: 1; cursor: pointer; }
-.trello-contador { color: var(--muted); font-weight: 460; font-size: 0.8rem; }
-.trello-eliminar-col { background: none; border: none; color: var(--muted); font-size: 0.7rem; }
-
-.trello-tarjetas {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  overflow-y: auto;
-}
-
-.trello-tarjeta {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 12px;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  font-size: 0.875rem;
-  transition: border-color 0.15s;
-}
-.trello-tarjeta:hover { border-color: var(--lilac); }
-.trello-etiqueta { display: inline-block; width: 32px; height: 8px; border-radius: 4px; }
-.trello-fecha { color: var(--muted); font-size: 0.75rem; }
-
-.trello-add-btn {
-  background: none;
-  border: none;
-  color: var(--muted);
-  text-align: left;
-  padding: 6px;
-  font-size: 0.875rem;
-  border-radius: 6px;
-}
-.trello-add-btn:hover { color: var(--text); background: var(--sunken); }
-.trello-add-form { display: flex; flex-direction: column; gap: 6px; }
-.trello-add-form textarea, .trello-add-form input { padding: 8px; }
-.trello-add-form .fila { display: flex; gap: 6px; }
-.trello-add-form button {
-  background: var(--wine);
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 0.8rem;
-}
-
-.trello-nueva-columna { background: var(--sunken); }
-
-.trello-columna-vacia { min-height: 40px; }
-
-.tarjeta-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(41, 40, 39, 0.4);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 50;
-  padding: 16px;
-}
-.tarjeta-detalle {
-  background: var(--card);
-  border-radius: var(--radius-card);
-  padding: 24px;
-  width: 100%;
-  max-width: 480px;
-  max-height: 90vh;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-.tarjeta-detalle-header { display: flex; gap: 10px; align-items: center; }
-.tarjeta-detalle-titulo {
-  flex: 1;
-  background: none;
-  border: none;
-  border-bottom: 1px solid var(--border);
-  font-size: 1.4rem;
-  font-weight: 460;
-  letter-spacing: -0.014em;
-  padding: 4px 0;
-  color: var(--text);
-}
-
-.checklist-lista { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
-.checklist-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: var(--bg);
-  border-radius: var(--radius-sm);
-  padding: 8px 10px;
-}
-.checklist-item label { display: flex; align-items: center; gap: 8px; font-size: 0.875rem; }
-.checklist-item input[type="checkbox"] { accent-color: var(--wine); }
-.checklist-hecho { text-decoration: line-through; color: var(--muted); }
-
-.tarjeta-detalle-acciones { display: flex; flex-direction: column; gap: 8px; }
-.btn-eliminar-tarjeta {
-  background: none;
-  border: none;
-  color: var(--negativo);
-  font-size: 0.875rem;
-  padding: 6px;
 }
 
 /* ---------- Palabra ---------- */
@@ -902,24 +701,6 @@
   gap: 8px;
 }
 
-/* ---------- Finanzas ---------- */
-.metas-financieras-grid { display: flex; flex-direction: column; gap: 10px; }
-.meta-financiera-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-card);
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.meta-financiera-card.hecho { border-color: var(--lagoon); }
-.meta-financiera-footer { display: flex; align-items: center; gap: 10px; }
-.meta-financiera-footer input { flex: none; width: 100px; }
-.meta-financiera-dias { color: var(--muted); font-size: 0.75rem; }
-
-.barra-categoria { display: flex; align-items: center; gap: 10px; margin-top: 6px; font-size: 0.875rem; }
-.barra-categoria .barra-progreso { flex: 1; }
 
 /* Quita las flechas de los inputs numéricos en todos los navegadores */
 input[type="number"]::-webkit-outer-spin-button,
@@ -931,32 +712,59 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
-/* ---------- Gamificación: logros, tienda, títulos ---------- */
-.gamif-panel {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-card);
-  padding: 16px;
+/* Días comprados en la Tienda dentro del heatmap de hábitos */
+.heat-cell.heat-protector { background: var(--lilac); box-shadow: inset 0 0 0 1px var(--violet); }
+.heat-cell.heat-descanso { background: repeating-linear-gradient(45deg, var(--border), var(--border) 2px, transparent 2px, transparent 4px); }
+
+/* ---------- Jarvis: "escribiendo…" y botón de enviar ---------- */
+.jarvis-mensajes { scroll-behavior: smooth; overscroll-behavior: contain; }
+.jarvis-burbuja b { font-weight: 600; }
+.jarvis-escribiendo { display: flex; gap: 4px; align-items: center; padding: 14px 16px; }
+.jarvis-escribiendo span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--muted);
+  animation: escribiendo 1.2s infinite ease-in-out;
+}
+.jarvis-escribiendo span:nth-child(2) { animation-delay: 0.15s; }
+.jarvis-escribiendo span:nth-child(3) { animation-delay: 0.3s; }
+@keyframes escribiendo { 0%, 60%, 100% { opacity: 0.3; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-3px); } }
+.jarvis-input-fila button { display: flex; align-items: center; justify-content: center; transition: opacity 0.15s; }
+.jarvis-input-fila button:disabled { opacity: 0.4; }
+
+/* Tareas que Jarvis agendó desde el chat */
+.jarvis-agenda {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  white-space: normal;
 }
+.jarvis-agenda-item { display: flex; align-items: flex-start; gap: 6px; font-size: 0.85rem; }
+.jarvis-agenda-item svg { color: var(--lagoon); flex: none; margin-top: 2px; }
+.jarvis-agenda-item .texto-suave { font-size: 0.78rem; }
+.jarvis-agenda.deshecho .jarvis-agenda-item { text-decoration: line-through; opacity: 0.6; }
+.jarvis-agenda .link-violeta { padding: 0; font-size: 0.8rem; }
 
-.logros-lista, .tienda-lista, .titulos-lista { display: flex; flex-direction: column; gap: 8px; }
-
-.logro-card, .tienda-card, .titulo-card {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
+/* Franja de conexión: sin internet, enviando, sincronizado */
+.estado-conexion {
   display: flex;
   align-items: center;
-  gap: 10px;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 6px;
+  margin: 10px 16px 0;
+  padding: 7px 12px;
+  border-radius: 99px;
+  font-size: 0.8rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  text-align: center;
 }
-.logro-card { justify-content: flex-start; }
-.logro-bloqueado { opacity: 0.5; }
-.logro-icono { font-size: 1.4rem; }
-.logro-descripcion { margin: 2px 0 0; color: var(--muted); font-size: 0.8rem; }
-
-.titulo-actual { background: var(--lilac); border-color: var(--text); }
+.estado-conexion.offline { background: var(--wine); border-color: var(--wine); color: #fff; }
+.estado-conexion.listo { color: var(--lagoon); border-color: var(--lagoon); }
+.estado-conexion.error { color: var(--negativo); border-color: var(--negativo); cursor: pointer; }
+@media (min-width: 768px) { .estado-conexion { margin: 16px 40px 0; } }

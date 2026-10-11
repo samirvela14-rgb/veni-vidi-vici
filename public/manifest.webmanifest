@@ -1,0 +1,37 @@
+{
+  "name": "Veni, Vidi, Vici",
+  "short_name": "Veni Vidi Vici",
+  "description": "Tu sistema personal: hábitos, tareas, finanzas, metas y Jarvis.",
+  "lang": "es",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f2f0eb",
+  "theme_color": "#421d24",
+  "icons": [
+    { "src": "/icon-192.webp", "sizes": "192x192", "type": "image/webp", "purpose": "any" },
+    { "src": "/icon-512.webp", "sizes": "512x512", "type": "image/webp", "purpose": "any" },
+    { "src": "/icon-512.webp", "sizes": "512x512", "type": "image/webp", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Agregar gasto",
+      "short_name": "Gasto",
+      "url": "/?agregar=gasto",
+      "icons": [{ "src": "/icon-192.webp", "sizes": "192x192", "type": "image/webp" }]
+    },
+    {
+      "name": "Agregar ingreso",
+      "short_name": "Ingreso",
+      "url": "/?agregar=ingreso",
+      "icons": [{ "src": "/icon-192.webp", "sizes": "192x192", "type": "image/webp" }]
+    },
+    {
+      "name": "Hablar con Jarvis",
+      "short_name": "Jarvis",
+      "url": "/?ir=jarvis",
+      "icons": [{ "src": "/icon-192.webp", "sizes": "192x192", "type": "image/webp" }]
+    }
+  ]
+}

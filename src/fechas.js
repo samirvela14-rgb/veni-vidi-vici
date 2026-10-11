@@ -40,32 +40,31 @@ export function nombreDiaCorto(fechaISO) {
   return dias[new Date(fechaISO + 'T00:00:00').getDay()]
 }
 
-function hexARgb(hex) {
-  const n = parseInt(hex.replace('#', ''), 16)
-  return [(n >> 16) & 255, (n >> 8) & 255, n & 255]
-}
-
-function mezclar(colorA, colorB, t) {
-  const [r1, g1, b1] = hexARgb(colorA)
-  const [r2, g2, b2] = hexARgb(colorB)
-  const r = Math.round(r1 + (r2 - r1) * t)
-  const g = Math.round(g1 + (g2 - g1) * t)
-  const b = Math.round(b1 + (b2 - b1) * t)
-  return `rgb(${r}, ${g}, ${b})`
-}
+// Semáforo brillante: rojo (día malo) → amarillo (día medio) → verde (día excelente).
+// Se mezcla por tono (HSL) para que los intermedios sean naranja y verde lima vivos, no café.
+const SEMAFORO = [
+  { pct: 0, h: 2, s: 85, l: 57 },    // rojo
+  { pct: 50, h: 52, s: 100, l: 52 }, // amarillo
+  { pct: 100, h: 128, s: 76, l: 44 }, // verde
+]
 
 export function colorSemaforo(pct) {
-  const ROJO = '#DE3535'
-  const AMARILLO = '#EDFF2B'
-  const VERDE = '#00B506'
-  if (pct <= 53) {
-    return mezclar(ROJO, AMARILLO, pct / 53)
-  }
-  return mezclar(AMARILLO, VERDE, (pct - 53) / (100 - 53))
+  const p = Math.max(0, Math.min(100, pct))
+  const i = p <= SEMAFORO[1].pct ? 0 : 1
+  const a = SEMAFORO[i]
+  const b = SEMAFORO[i + 1]
+  const t = (p - a.pct) / (b.pct - a.pct)
+  const mezcla = (x, y) => Math.round(x + (y - x) * t)
+  return `hsl(${mezcla(a.h, b.h)}, ${mezcla(a.s, b.s)}%, ${mezcla(a.l, b.l)}%)`
 }
 
 export function sumarDias(fechaISO, n) {
   const d = new Date(fechaISO + 'T00:00:00')
   d.setDate(d.getDate() + n)
   return formatearFecha(d)
+}
+// Convierte un timestamp de Supabase (UTC) a 'YYYY-MM-DD' en la hora local
+export function fechaLocal(timestamp) {
+  if (!timestamp) return null
+  return formatearFecha(new Date(timestamp))
 }
